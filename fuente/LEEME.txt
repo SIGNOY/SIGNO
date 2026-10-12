@@ -1,0 +1,14 @@
+Signo Consultorio - código fuente
+
+Esta carpeta sirve solo para hacer cambios al programa más adelante.
+No hace falta abrirla ni instalarla: el programa que usas es "Signo Consultorio.html".
+
+Para pedir un cambio en una conversación nueva con Claude, adjunta:
+  1. Este archivo comprimido (Signo_codigo.zip), y
+  2. Explica qué quieres agregar o cambiar.
+
+Contenido:
+  app/        pantallas del programa (template.html, atencion.js, growth.js, sive.js, xlsx.js) y build.py, que arma el archivo final
+  msp/        motor de formularios MSP (msp.js), generador (gen.py), plantillas oficiales en xlsx (src/) y forms.json
+  who/        tablas OMS de crecimiento
+Para armar el programa: python3 app/build.py  (genera app/Signo Consultorio.html)

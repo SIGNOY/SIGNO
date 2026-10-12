@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signo Consultorio</title>
+<link rel="icon" href="__FAV__">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0B7A72">
+<link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<style>
+:root{--navy:#12263A;--teal:#0B7A72;--aqua:#4FC3B8;--mint:#BDE8E3;--soft:#E8F1F1;--bg:#F5F8F8;--line:#C9D6DA;--grey:#4A5B6B;--pale:#9FB3C4;--warn:#B4532A}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Calibri,system-ui,sans-serif;color:var(--navy);background:var(--bg);font-size:15px}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:flex;min-height:100vh}
+nav{width:236px;flex-shrink:0;background:var(--navy);color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:6px}
+nav .brand{background:#fff;border-radius:12px;padding:12px;margin-bottom:16px}
+nav .brand img{width:100%;display:block}
+nav button{background:none;border:0;color:#C9D6E0;text-align:left;padding:11px 14px;border-radius:10px;cursor:pointer;font-weight:600;display:flex;gap:10px;align-items:center;min-height:44px}
+nav button:hover{background:#1E3850;color:#fff}
+nav button.on{background:var(--teal);color:#fff}
+nav .foot{margin-top:auto;font-size:12px;color:var(--pale);line-height:1.5}
+main{flex:1;min-width:0;padding:28px 34px 60px}
+h1{margin:0 0 4px;font-size:26px}
+.sub{color:var(--grey);margin:0 0 22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:18px}
+.card h2{font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 14px;color:var(--teal)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px}
+.span2{grid-column:span 2}.span3{grid-column:span 3}.span4{grid-column:1/-1}
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--grey)}
+input,select,textarea{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff;min-height:40px;font-weight:400;color:var(--navy)}
+textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--aqua);border-color:var(--aqua)}
+.hint{font-size:12px;color:var(--grey);font-weight:400}
+.warnt{color:var(--warn)}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{background:var(--navy);color:#fff;text-align:left;padding:8px 9px;font-weight:600;font-size:13px}
+table.t td{border-bottom:1px solid var(--line);padding:6px 7px;vertical-align:top}
+table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;min-height:44px}
+.btn.p{background:var(--teal);color:#fff}.btn.p:hover{background:#08635c}
+.btn.s{background:var(--soft);color:var(--navy)}.btn.s:hover{background:#d7e7e7}
+.btn.d{background:#fbeae4;color:var(--warn)}
+.btn.sm{padding:6px 12px;min-height:34px;font-size:13px}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.pill.ok{background:#dff3ef;color:var(--teal)}.pill.no{background:#fbeae4;color:var(--warn)}
+.tag{font-family:Consolas,monospace;font-weight:700;white-space:nowrap}
+.banner{background:#fff8d6;border:1px solid #ecd98a;border-radius:12px;padding:12px 16px;margin-bottom:18px;font-size:14px}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 8px 30px #0003;display:none;max-width:420px}
+.modal{position:fixed;inset:0;background:#12263Acc;display:none;z-index:50;overflow:auto}
+.modal .box{background:#fff;margin:24px auto;max-width:1180px;border-radius:14px;padding:16px}
+.modal .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.preview{background:#8a99a6;padding:18px;border-radius:10px;overflow:auto}
+.preview .page{margin:0 auto 18px;box-shadow:0 4px 18px #0004}
+.grid.g6{grid-template-columns:repeat(6,minmax(0,1fr))}.span5{grid-column:span 5}.span6{grid-column:1/-1}
+.chks{display:grid;grid-template-columns:repeat(var(--cols,5),minmax(0,1fr));gap:6px 10px}
+.chk{flex-direction:row;align-items:center;gap:7px;font-weight:500;font-size:13px;color:var(--navy);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-height:36px;cursor:pointer}
+.chk input{min-height:0;width:17px;height:17px;flex-shrink:0;accent-color:var(--teal)}
+.chk:has(input:checked){background:#dff3ef;border-color:var(--aqua)}
+.preview .mspp{margin:0 auto 18px;box-shadow:0 4px 18px #0004}
+.cvp{background:#fff;border-radius:12px;padding:12px 14px;margin:0 auto 14px;max-width:1123px}
+.cvt td{padding:3px}.cvt input,.cvt select{min-height:32px;padding:4px 6px;width:100%}.cvt th{font-size:12px;padding:6px}
+.acta .ain{padding:10mm 15mm;font-family:Calibri,Arial,sans-serif;font-size:9.3pt;height:100%;box-sizing:border-box;overflow:hidden;color:#000;line-height:1.35}
+.acta .ahd{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4mm;text-align:center;font-weight:700}.acta .ahd img{height:12mm}.acta .ahd small{display:block;font-weight:400;font-size:8pt}
+.acta .atl{border:1.2px solid #000;text-align:center;font-weight:700;font-size:13pt;padding:2.5mm;margin:3mm 0}
+.acta .atb{width:100%;border-collapse:collapse;margin:2.5mm 0}.acta .atb td{border:1px solid #000;padding:1.1mm 2mm;vertical-align:top}
+.acta .ast{text-align:center;font-weight:700;margin:3mm 0 1.5mm;text-decoration:underline}.acta .abx{border:1px solid #000;padding:2mm;margin:1.5mm 0}
+.acta .asm{font-size:8.6pt}.acta .asg{margin:8mm 0 2mm}.acta .aln{border-top:1px solid #000;width:70mm;margin-bottom:1mm}
+.acta .af{color:#0b1f3a;font-weight:600;outline:none;min-width:20mm;display:inline-block}.acta .af.u{border-bottom:1px solid #000;min-width:22mm;text-align:center}
+.acta .af:focus{background:#e3f6f3}.acta .afoot{position:absolute;bottom:8mm;left:16mm;right:16mm;font-size:7pt;color:#555;text-align:center}
+@media print{.acta .af:focus{background:none}}
+.grpage .grin{padding:9mm 11mm;font-family:Arial,Helvetica,sans-serif;color:#000;height:100%;box-sizing:border-box;overflow:hidden;position:relative}
+.grhd{width:100%;border-collapse:collapse;font-size:7.6pt;margin-bottom:2mm}.grhd th{background:#ccccff;text-align:left;padding:1mm 2mm;font-size:8.5pt;border:1px solid #555}
+.grhd td{border:1px solid #555;padding:.6mm 1.5mm;vertical-align:top}.grhd small{display:block;background:#ccffcc;margin:-.6mm -1.5mm .8mm;padding:.4mm 1.5mm;font-size:6.2pt;font-weight:700}
+.grttl{text-align:center;font-weight:800;font-size:11pt;letter-spacing:.04em;margin:1mm 0 2mm}
+.grb{margin-bottom:2.5mm}.grt{color:#fff;font-weight:700;font-size:8.6pt;padding:1mm 2mm;display:flex;justify-content:space-between}.grt span{font-weight:400}
+.grb svg{display:block;width:100%;height:auto;border:1px solid #ccc;border-top:0}
+.grtab{width:100%;border-collapse:collapse;font-size:7.2pt;margin-top:1mm}.grtab th{background:#eee;border:1px solid #999;padding:.5mm 1mm;text-align:left}.grtab td{border:1px solid #bbb;padding:.4mm 1mm}
+.grft{position:absolute;left:11mm;right:11mm;bottom:5mm;display:flex;justify-content:space-between;font-size:6.6pt;font-weight:700}
+.ciebox{position:absolute;z-index:80;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #0003;display:none;max-height:340px;overflow:auto;font-size:13px;max-width:640px}
+.ciebox div{padding:7px 10px;cursor:pointer;border-bottom:1px solid #eef3f3}.ciebox div:hover,.ciebox div.on{background:#dff3ef}.ciebox b{font-family:Consolas,monospace;color:var(--teal);margin-right:6px}
+.olx{column-gap:9mm;font-size:9.4pt}.olg{break-inside:avoid;margin-bottom:3mm}.olg b{display:block;color:#0B7A72;font-size:8.6pt;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid #C9D6DA;margin-bottom:1mm}
+.olg ul{margin:0;padding-left:5mm}.olg li{line-height:1.45}
+.sendlg{position:fixed;inset:0;background:#12263A99;z-index:90;display:none;align-items:center;justify-content:center;padding:16px}
+.sdbox{background:#fff;border-radius:14px;padding:18px 20px;max-width:560px;width:100%;box-shadow:0 20px 60px #0005}.sdbox ol{padding-left:18px;margin:12px 0}.sdbox li{margin-bottom:12px}.sdbox label{margin:8px 0}
+.pvh{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin:4px auto 8px;max-width:1123px}
+@media (max-width:900px){.grid.g6{grid-template-columns:repeat(2,minmax(0,1fr))}.chks{grid-template-columns:repeat(2,minmax(0,1fr))}.app{flex-direction:column}
+  nav{width:auto;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px;gap:4px;position:sticky;top:0;z-index:40;-webkit-overflow-scrolling:touch}
+  nav button{white-space:nowrap;flex-shrink:0;padding:9px 12px;min-height:40px;font-size:14px}nav .brand,nav .foot{display:none}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:16px 14px 80px}h1{font-size:22px}
+  .card{padding:16px 14px}.modal .box{margin:0;border-radius:0;min-height:100vh;padding:12px}.preview{padding:8px}
+  table.t{font-size:13px}.row .btn{flex:1 1 auto}}
+@media (max-width:560px){.grid,.grid.g6{grid-template-columns:minmax(0,1fr)}.span2,.span3,.span4,.span5,.span6{grid-column:1/-1}.chks{grid-template-columns:minmax(0,1fr)}
+  #meds thead{display:none}#meds tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}#meds td{border:0;padding:0}#meds td.n{display:none}
+  #meds td:nth-child(2){grid-column:1/-1}
+  #fa > .row[style*="sticky"]{position:static!important;border-top:0}}
+
+/* ---------- printable documents ---------- */
+.page{background:#fff;color:#12263A;position:relative;overflow:hidden;font-family:Calibri,"Segoe UI",sans-serif}
+.page.a4p{width:210mm;height:297mm;padding:13mm 15mm 30mm}
+.page.a4l{width:297mm;height:210mm;padding:9mm 11mm 25mm}
+.page .wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:50%;opacity:1;pointer-events:none}
+.page .z{position:relative}
+.lh{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.4px solid #0B7A72;padding-bottom:6px;margin-bottom:9px}
+.lh img{height:15mm}
+.lh .dr{text-align:right;font-size:8.6pt;color:#4A5B6B;line-height:1.35}.lh .dr b{color:#12263A;font-size:10pt}
+.tb{display:flex;justify-content:space-between;align-items:stretch;margin-bottom:9px;gap:8px}
+.tb .tt b{display:block;font-size:17pt;letter-spacing:.08em}.tb .tt span{color:#0B7A72;font-size:10pt}
+.fb{background:#12263A;color:#fff;text-align:center;padding:5px 12px;min-width:46mm;display:flex;flex-direction:column;justify-content:center}
+.fb small{font-size:6.5pt;letter-spacing:.3em;font-weight:700}.fb b{font-size:11pt}.fb i{font-style:normal;font-size:7pt;color:#BDE8E3}
+table.d{width:100%;border-collapse:collapse;font-size:8.6pt;margin-bottom:6px}
+table.d td,table.d th{border:1px solid #C9D6DA;padding:3px 6px;text-align:left;vertical-align:middle}
+table.d th{background:#12263A;color:#fff;font-weight:700;font-size:8pt}
+table.d td.l{background:#E8F1F1;color:#4A5B6B;font-weight:700;font-size:7.4pt;width:18%}
+table.d tr:nth-child(even) td:not(.l){background:#F5F8F8aa}
+table.d td b{color:#12263A}
+.sec{font-weight:700;font-size:9.6pt;letter-spacing:.08em;border-bottom:1.6px solid #0B7A72;margin:9px 0 5px;padding-bottom:2px}
+.sec em{font-style:normal;color:#0B7A72;margin-right:6px}
+.sm{font-size:7.6pt;color:#4A5B6B}
+.concl{background:#E8F1F1;border-left:4px solid #0B7A72;padding:7px 10px;font-size:9.4pt;line-height:1.45;white-space:pre-wrap}
+.sig{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:10px}
+.sig .who{font-size:8pt;color:#4A5B6B;line-height:1.4}.sig .who b{font-size:10pt;color:#12263A}
+.sig .who small{display:block;color:#0B7A72;font-weight:700;letter-spacing:.2em;font-size:6.5pt}
+.sig .line{border-top:1px solid #12263A;width:68mm;margin-bottom:3px;margin-top:14mm}
+.pf{position:absolute;left:0;right:0;bottom:0;padding:0 15mm 6mm;display:flex;gap:10px;align-items:flex-end}
+.page.a4l .pf{padding:0 11mm 4mm}
+.pf .tx{flex:1;min-width:0;text-align:center;font-size:7.2pt;color:#4A5B6B;line-height:1.45}
+.pf .tx a{color:#0B7A72;font-weight:700;text-decoration:none}
+.pf .mt{font-size:4.6pt;color:#9FB3C4;letter-spacing:.06em;white-space:nowrap;overflow:hidden}
+.pf .qr{width:17mm;height:17mm;flex-shrink:0}.pf .qr svg{width:100%;height:100%}
+.ecg{position:absolute;left:0;right:0;bottom:21mm;height:6mm}
+.page.a4l .ecg{bottom:17mm}
+.halves{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.halves>div{padding:0 7mm}.halves>div:first-child{padding-left:0;border-right:1.4px dashed #9FB3C4}.halves>div:last-child{padding-right:0}
+.rp{font-style:italic;font-weight:700;color:#0B7A72;font-size:16pt;margin:4px 0 2px}
+.ie{font-family:Arial,Helvetica,sans-serif}.iep{font-size:10pt;line-height:1.5;text-align:justify;margin:0 0 4mm}.iel{margin:0 0 6mm 8mm;padding-left:4mm;font-size:10pt;line-height:1.5}.ied{font-size:10pt;font-weight:700;line-height:1.5}
+.blank{border-bottom:1px solid #C9D6DA;min-height:6mm;font-size:8.6pt;padding:1px 2px}
+
+#print{display:none}
+@media print{
+  body{background:#fff}
+  .app,.modal,.toast,.sendlg,.ciebox{display:none!important}
+  #print{display:block}
+  #print .page{box-shadow:none;margin:0;page-break-after:always;break-after:page}
+  #print .page:last-child{page-break-after:auto;break-after:auto}
+  #print .mspp{box-shadow:none;margin:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<style id="pagecss">@page{size:A4 portrait;margin:0}</style>
+</head>
+<body>
+<div class="app">
+  <nav>
+    <div class="brand"><img src="__LOGO__" alt="Signo Medicina Integral"></div>
+    <button data-v="atencion" class="on">Atención (HCU MSP)</button>
+    <button data-v="formularios">Formularios MSP</button>
+    <button data-v="receta">Nueva receta</button>
+    <button data-v="lab">Orden de laboratorio</button>
+    <button data-v="mental">Certificado de salud mental</button>
+    <button data-v="iess">Certificado IESS (reposo)</button>
+    <button data-v="general">Otros certificados</button>
+    <button data-v="registro">Registro de folios</button>
+    <button data-v="pacientes">Pacientes</button>
+    <button data-v="ajustes">Ajustes y respaldo</button>
+    <div class="foot">Los datos se guardan solo en este equipo y navegador. Haz un respaldo cada semana en «Ajustes y respaldo».</div>
+  </nav>
+  <main id="main"></main>
+</div>
+<div class="modal" id="modal"><div class="box">
+  <div class="bar">
+    <div><b id="mtitle">Vista previa</b> <span class="hint" id="mhint"></span></div>
+    <div class="row">
+      <label id="sigwrap" style="flex-direction:row;align-items:center;gap:6px">Firma
+        <select id="sigmode"><option value="e">Electrónica (PDF)</option><option value="m">Manuscrita (impresa)</option></select></label>
+      <button class="btn p" id="doprint">Imprimir / Guardar PDF</button>
+      <button class="btn s" id="sendwa">WhatsApp</button>
+      <button class="btn s" id="sendmail">Correo</button>
+      <button class="btn s" id="mclose">Cerrar</button>
+    </div>
+  </div>
+  <div class="preview" id="pv"></div>
+</div></div>
+<div id="senddlg" class="sendlg"></div>
+<div id="print"></div>
+<div class="toast" id="toast"></div>
+
+<script>__QRLIB__</script>
+<script>var MSPDATA = __MSPDATA__;</script>
+<script>__MSPJS__</script>
+<script>
+"use strict";
+const LOGO = "__LOGO__", WM = "__WM__";
+const KEY = "signo_consultorio_v1";
+const TYPES = { RX: "Receta médica", SM: "Certificado de salud mental", IE: "Certificado IESS", CM: "Certificado médico", OL: "Orden de laboratorio" };
+const DEF = {
+  settings: { nombre: "Dr. Yassir Josué Dumani Manzano", titulo: "Médico · Magíster en Prevención de Riesgos Laborales",
+    ci: "0955259585", senescyt: "1006-2021-2377353", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
+    tel: "099 379 4058", wa: "593993794058", email: "yassirjosue@live.com", ciudad: "Guayaquil", validezRx: 30,
+    inst: "RED PRIVADA", estProv: "GUAYAS", estCanton: "DAULE", estParroq: "LA AURORA (SATÉLITE)", unicodigo: "", estab: "SIGNO · MEDICINA INTEGRAL", tipologia: "CONSULTORIO", pn1: "YASSIR", pa1: "DUMANI", pa2: "MANZANO" },
+  counters: { RX: { year: 2026, next: 51 }, SM: { year: 2026, next: 2 }, CM: { year: 2026, next: 1 }, IE: { year: 2026, next: 1 }, OL: { year: 2026, next: 1 } }, patients: {}, docs: [], lastBackup: null,
+};
+let DB;
+function load() {
+  try { DB = JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { DB = null; }
+  if (!DB) DB = JSON.parse(JSON.stringify(DEF));
+  DB.settings = Object.assign({}, DEF.settings, DB.settings || {});
+  DB.counters = DB.counters || {}; DB.patients = DB.patients || {}; DB.docs = DB.docs || []; DB.atenciones = DB.atenciones || [];
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(DB)); return true; }
+  catch (e) { toast("No se pudo guardar en este navegador. Descarga un respaldo ahora."); return false; }
+}
+load();
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const fmt = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-"); return `${d}/${m}/${y}`; };
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const largo = (iso) => { const [y, m, d] = iso.split("-").map(Number); return `${d} de ${MESES[m - 1]} de ${y}`; };
+function edad(nac, ref) {
+  if (!nac) return ""; const a = new Date(nac + "T00:00"), b = new Date((ref || today()) + "T00:00");
+  let e = b.getFullYear() - a.getFullYear(); const m = b.getMonth() - a.getMonth();
+  if (m < 0 || (m === 0 && b.getDate() < a.getDate())) e--; return e >= 0 ? e : "";
+}
+function cedulaOk(c) {
+  c = String(c || "").replace(/\D/g, ""); if (c.length !== 10) return false;
+  const p = +c.slice(0, 2); if (!((p >= 1 && p <= 24) || p === 30) || +c[2] >= 6) return false;
+  let s = 0; for (let i = 0; i < 9; i++) { let v = +c[i] * (i % 2 ? 1 : 2); if (v > 9) v -= 9; s += v; }
+  return (10 - (s % 10)) % 10 === +c[9];
+}
+const fmtCed = (c) => { c = String(c || "").replace(/\D/g, ""); return c.length === 10 ? c.slice(0, 9) + "-" + c[9] : c; };
+function letras(n) {
+  n = parseInt(n, 10); if (!(n >= 0) || n > 999) return "";
+  const U = ["cero","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez","once","doce","trece","catorce","quince","dieciséis","diecisiete","dieciocho","diecinueve","veinte","veintiuno","veintidós","veintitrés","veinticuatro","veinticinco","veintiséis","veintisiete","veintiocho","veintinueve"];
+  const D = ["","","","treinta","cuarenta","cincuenta","sesenta","setenta","ochenta","noventa"];
+  const C = ["","ciento","doscientos","trescientos","cuatrocientos","quinientos","seiscientos","setecientos","ochocientos","novecientos"];
+  const dec = (x) => x < 30 ? U[x] : D[Math.floor(x / 10)] + (x % 10 ? " y " + U[x % 10] : "");
+  if (n < 100) return dec(n); if (n === 100) return "cien";
+  return C[Math.floor(n / 100)] + (n % 100 ? " " + dec(n % 100) : "");
+}
+function anioLetras(y) { y = +y; const m = Math.floor(y / 1000), r = y % 1000; return (m === 1 ? "mil" : letras(m) + " mil") + (r ? " " + letras(r) : ""); }
+const fechaLetras = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return `${letras(d)} de ${MESES[m - 1]} del ${anioLetras(y)}`.toUpperCase(); };
+function toast(m) { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => (t.style.display = "none"), 4200); }
+function nextFolio(type, peek) {
+  const y = new Date().getFullYear(); const c = DB.counters[type] || { year: y, next: 1 };
+  if (c.year !== y) { c.year = y; c.next = 1; }
+  const f = `SIG-${type}-${y}-${String(c.next).padStart(4, "0")}`;
+  if (!peek) { c.next++; DB.counters[type] = c; }
+  return f;
+}
+
+/* ---------- patient fields (shared) ---------- */
+function patientFields(extra = "") {
+  const opts = Object.values(DB.patients).map((p) => `<option value="${esc(p.cedula)}">${esc(p.nombre)}</option>`).join("");
+  return `<div class="card"><h2>Paciente</h2><div class="grid">
+    <label>Cédula<input name="cedula" list="pl" autocomplete="off" required><span class="hint" id="cedmsg">Si ya está registrado, sus datos se llenan solos.</span></label>
+    <label class="span3">Nombres y apellidos<input name="nombre" required></label>
+    <label>Fecha de nacimiento<input type="date" name="nac"></label>
+    <label>Edad<input name="edad" placeholder="Se calcula sola"></label>
+    <label>Sexo<select name="sexo"><option>Femenino</option><option>Masculino</option></select></label>
+    <label>Teléfono<input name="tel"></label>
+    <label class="span2">Correo<input name="email" type="email" placeholder="Para enviarle documentos"></label>
+    ${extra}
+  </div><datalist id="pl">${opts}</datalist></div>`;
+}
+function wirePatient(form) {
+  const ced = form.cedula, msg = $("#cedmsg", form);
+  const fill = () => {
+    const p = DB.patients[ced.value.replace(/\D/g, "")];
+    if (p) { ["nombre", "nac", "sexo", "tel", "email", "ocupacion", "alergias", "domicilio", "empresa", "cargo"].forEach((k) => { if (form[k] && p[k] != null) form[k].value = p[k]; }); form.nac.dispatchEvent(new Event("change")); msg.textContent = "Paciente encontrado: datos cargados."; msg.className = "hint"; }
+    else if (ced.value.replace(/\D/g, "").length === 10) { msg.textContent = cedulaOk(ced.value) ? "Cédula válida. Paciente nuevo." : "Revisa la cédula: el dígito verificador no coincide."; msg.className = cedulaOk(ced.value) ? "hint" : "hint warnt"; }
+  };
+  ced.addEventListener("change", fill); ced.addEventListener("input", () => { if (ced.value.replace(/\D/g, "").length === 10) fill(); });
+  form.nac.addEventListener("change", () => { const e = edad(form.nac.value); if (e !== "") form.edad.value = e + " años"; });
+}
+function readPatient(form) {
+  const p = { cedula: form.cedula.value.replace(/\D/g, ""), nombre: form.nombre.value.trim(), nac: form.nac.value, edad: form.edad.value.trim(), sexo: form.sexo.value, tel: form.tel.value.trim() };
+  if (form.email && form.email.value.trim()) p.email = form.email.value.trim();
+  if (form.ocupacion) p.ocupacion = form.ocupacion.value.trim();
+  if (form.alergias) p.alergias = form.alergias.value.trim();
+  ["domicilio", "empresa", "cargo"].forEach((k) => { if (form[k]) p[k] = form[k].value.trim(); });
+  return p;
+}
+function storePatient(p) { const old = DB.patients[p.cedula] || {}; DB.patients[p.cedula] = Object.assign(old, p, { updated: today() }); }
+
+/* ---------- views ---------- */
+const V = {};
+V.receta = () => {
+  $("#main").innerHTML = `<h1>Nueva receta</h1><p class="sub">Folio que se asignará: <span class="tag">${nextFolio("RX", true)}</span>. Hasta 8 medicamentos por hoja; si hay más, se crean hojas adicionales con el mismo folio.</p>
+  <form id="f">${patientFields(`<label class="span4">Alergias<input name="alergias" placeholder="Niega, o detalla"></label>`)}
+  <div class="card"><h2>Consulta</h2><div class="grid">
+    <label>Fecha<input type="date" name="fecha" value="${today()}"></label>
+    <label class="span2">Diagnóstico<input name="dx" required></label>
+    <label>CIE-10<input name="cie" placeholder="Ej. J02.9"></label>
+  </div></div>
+  <div class="card"><h2>Medicamentos (nombre genérico)</h2>
+    <table class="t" id="meds"><thead><tr><th style="width:3%">#</th><th style="width:20%">Medicamento (DCI)</th><th>Concentración</th><th>Forma</th><th style="width:7%">Cant.</th><th>Dosis</th><th>Vía</th><th>Frecuencia</th><th>Duración</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="row" style="margin-top:10px"><button type="button" class="btn s sm" id="addmed">+ Agregar medicamento</button><span class="hint">La cantidad se escribe en letras automáticamente.</span></div>
+  </div>
+  <div class="card"><h2>Indicaciones para el paciente</h2><div class="grid">
+    <label class="span2">Recomendaciones<textarea name="recom"></textarea></label>
+    <label class="span2">Acuda de inmediato si presenta<textarea name="alarma"></textarea></label>
+    <label>Próximo control<input type="date" name="control"></label>
+  </div></div>
+  <div class="row"><button class="btn p">Emitir receta y ver documento</button><span class="hint">Al emitir se asigna el folio y se guarda en el registro.</span></div></form>`;
+  const f = $("#f"); wirePatient(f);
+  const tb = $("#meds tbody");
+  const VIAS = ["Oral", "Sublingual", "Tópica", "Oftálmica", "Ótica", "Nasal", "Inhalatoria", "Intramuscular", "Intravenosa", "Subcutánea", "Rectal", "Vaginal"];
+  const FORMAS = ["Tableta", "Cápsula", "Jarabe", "Suspensión", "Gotas", "Crema", "Ungüento", "Gel", "Solución inyectable", "Inhalador", "Óvulo", "Supositorio", "Sobre"];
+  const addRow = () => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="n"></td><td><input data-k="dci"></td><td><input data-k="conc" placeholder="500 mg"></td>
+      <td><input data-k="forma" list="formas"></td><td><input data-k="cant" type="number" min="1" max="999"></td>
+      <td><input data-k="dosis" placeholder="1 tableta"></td><td><select data-k="via">${VIAS.map((v) => `<option>${v}</option>`).join("")}</select></td>
+      <td><input data-k="frec" placeholder="cada 8 horas"></td><td><input data-k="dur" placeholder="5 días"></td>
+      <td><button type="button" class="btn d sm" aria-label="Quitar">✕</button></td>`;
+    $("button", tr).onclick = () => { tr.remove(); renum(); };
+    tb.appendChild(tr); renum();
+  };
+  const renum = () => $$("tr", tb).forEach((r, i) => ($(".n", r).textContent = i + 1));
+  $("#main").insertAdjacentHTML("beforeend", `<datalist id="formas">${FORMAS.map((x) => `<option value="${x}">`).join("")}</datalist>`);
+  $("#addmed").onclick = addRow; addRow(); addRow();
+  f.onsubmit = (e) => {
+    e.preventDefault();
+    const meds = $$("tr", tb).map((r) => Object.fromEntries($$("[data-k]", r).map((i) => [i.dataset.k, i.value.trim()]))).filter((m) => m.dci);
+    if (!meds.length) return toast("Agrega al menos un medicamento.");
+    const p = readPatient(f); if (!p.cedula || !p.nombre) return toast("Falta la cédula o el nombre del paciente.");
+    meds.forEach((m) => (m.letras = m.cant ? letras(m.cant) : ""));
+    const doc = { folio: nextFolio("RX"), type: "RX", date: f.fecha.value || today(), status: "Emitida", patient: p,
+      data: { dx: f.dx.value.trim(), cie: f.cie.value.trim(), meds, recom: f.recom.value.trim(), alarma: f.alarma.value.trim(), control: f.control.value } };
+    storePatient(p); DB.docs.unshift(doc); save(); openDoc(doc); toast(`Receta ${doc.folio} emitida y guardada.`); V.receta();
+  };
+};
+
+const FUNC = [
+  ["Apariencia y conducta", "Aseo adecuado, conducta acorde al contexto, colaborador/a"], ["Conciencia", "Vigil, alerta"],
+  ["Orientación", "Orientado/a en tiempo, espacio y persona"], ["Atención y concentración", "Conservadas"],
+  ["Memoria", "Inmediata, reciente y remota conservadas"], ["Lenguaje", "Fluido, coherente, comprensión conservada"],
+  ["Pensamiento", "Curso y contenido sin alteraciones; sin ideas delirantes"], ["Sensopercepción", "Sin alucinaciones ni ilusiones"],
+  ["Afectividad", "Eutímico/a, afecto congruente"], ["Juicio y raciocinio", "Conservados"], ["Introspección", "Conservada"],
+  ["Riesgo para sí o terceros", "No se evidencia"],
+];
+const SCALES = [
+  ["mmse", "Mini-Mental State Examination (MMSE)", "Función cognitiva", "24 a 30 / 30", 30],
+  ["phq9", "PHQ-9", "Síntomas depresivos", "0 a 4 / 27", 27],
+  ["gad7", "GAD-7", "Síntomas de ansiedad", "0 a 4 / 21", 21],
+  ["audit", "AUDIT", "Consumo de alcohol", "0 a 7 / 40", 40],
+];
+function interp(k, v) {
+  if (v === "" || v == null || isNaN(v)) return "";
+  v = +v;
+  if (k === "mmse") return v >= 24 ? "Sin deterioro cognitivo (valorar según edad y escolaridad)" : "Bajo el punto de corte: valorar según edad y escolaridad";
+  if (k === "phq9") return v <= 4 ? "Síntomas depresivos mínimos" : v <= 9 ? "Síntomas depresivos leves" : v <= 14 ? "Síntomas depresivos moderados" : v <= 19 ? "Moderadamente graves" : "Graves";
+  if (k === "gad7") return v <= 4 ? "Ansiedad mínima" : v <= 9 ? "Ansiedad leve" : v <= 14 ? "Ansiedad moderada" : "Ansiedad grave";
+  if (k === "audit") return v <= 7 ? "Bajo riesgo" : v <= 15 ? "Consumo de riesgo" : v <= 19 ? "Consumo perjudicial" : "Probable dependencia";
+}
+V.mental = () => {
+  $("#main").innerHTML = `<h1>Certificado de salud mental</h1><p class="sub">Folio que se asignará: <span class="tag">${nextFolio("SM", true)}</span>. Registra solo lo que constataste en la evaluación.</p>
+  <form id="f">${patientFields(`<label class="span2">Ocupación<input name="ocupacion"></label>`)}
+  <div class="card"><h2>Evaluación</h2><div class="grid">
+    <label>Fecha de emisión<input type="date" name="fecha" value="${today()}"></label>
+    <label>Fecha de evaluación<input type="date" name="feval" value="${today()}"></label>
+    <label>Modalidad<select name="modal"><option>Consultorio</option><option>Domicilio</option></select></label>
+    <label>Motivo<select name="motivo"><option>Trámite legal o administrativo</option><option>Ingreso o requisito laboral</option><option>Requisito académico</option><option>Otro</option></select></label>
+    <label class="span2">Detalle del motivo (opcional)<input name="motivod"></label>
+    <label>Validez (días)<input type="number" name="validez" value="30" min="1"></label>
+  </div></div>
+  <div class="card"><h2>1 · Examen del estado mental</h2><table class="t"><thead><tr><th>Función</th><th>Hallazgo esperado</th><th style="width:15%">Resultado</th><th style="width:30%">Observaciones</th></tr></thead><tbody>
+    ${FUNC.map(([n, h], i) => `<tr><td><b>${n}</b></td><td class="hint">${h}</td><td><select data-i="${i}" class="res">${i === 11 ? "<option>Ausente</option><option>Presente</option>" : "<option>Normal</option><option>Alterado</option>"}</select></td><td><input data-o="${i}" placeholder="Ninguna"></td></tr>`).join("")}
+  </tbody></table></div>
+  <div class="card"><h2>2 · Instrumentos de tamizaje</h2><table class="t"><thead><tr><th>Instrumento</th><th>Rango sin alteración</th><th style="width:14%">Puntaje</th><th style="width:12%">No aplicado</th><th style="width:34%">Interpretación</th></tr></thead><tbody>
+    ${SCALES.map(([k, n, , r, mx]) => `<tr><td><b>${n}</b></td><td>${r}</td><td><input type="number" min="0" max="${mx}" data-s="${k}"></td><td style="text-align:center"><input type="checkbox" data-na="${k}" style="min-height:22px;width:22px"></td><td><input data-int="${k}"></td></tr>`).join("")}
+  </tbody></table><p class="hint">La interpretación se sugiere según los puntos de corte habituales; puedes editarla. Para el MMSE ajusta según edad y escolaridad.</p>
+  <div class="grid"><label>Valoración psicológica<select name="psi"><option>No se realizó</option><option>Sí, informe adjunto</option></select></label><label class="span3">Psicólogo/a y fecha (si aplica)<input name="psid"></label></div></div>
+  <div class="card"><h2>3 · Antecedentes</h2><div class="grid">
+    <label class="span2">Psiquiátricos o psicológicos<input name="a1" value="Niega"></label><label class="span2">Hospitalizaciones por salud mental<input name="a2" value="Niega"></label>
+    <label class="span2">Consumo de sustancias<input name="a3" value="Niega"></label><label class="span2">Medicación actual<input name="a4" value="Ninguna"></label>
+  </div></div>
+  <div class="card"><h2>4 · Conclusión</h2><label>Texto de la conclusión<textarea name="concl" style="min-height:120px"></textarea></label>
+    <div class="row" style="margin-top:8px"><button type="button" class="btn s sm" id="genc">Redactar a partir del examen</button><span class="hint">Revisa y ajusta el texto antes de emitir.</span></div></div>
+  <div class="row"><button class="btn p">Emitir certificado y ver documento</button></div></form>`;
+  const f = $("#f"); wirePatient(f);
+  $$("[data-s]", f).forEach((i) => i.addEventListener("input", () => { const k = i.dataset.s; $(`[data-int="${k}"]`, f).value = interp(k, i.value); }));
+  $$("[data-na]", f).forEach((c) => c.addEventListener("change", () => { const k = c.dataset.na; const s = $(`[data-s="${k}"]`, f); s.disabled = c.checked; if (c.checked) { s.value = ""; $(`[data-int="${k}"]`, f).value = k === "mmse" ? "No valorable por escolaridad; función cognitiva evaluada mediante examen clínico" : "No aplicado"; } else $(`[data-int="${k}"]`, f).value = ""; }));
+  const gen = () => {
+    const fem = f.sexo.value === "Femenino", ap = fem ? "la paciente" : "el paciente";
+    const res = $$(".res", f).map((s) => s.value), alt = FUNC.filter((_, i) => i < 11 && res[i] === "Alterado").map(([n]) => n.toLowerCase());
+    const ori = ($('[data-o="2"]', f).value || "").trim();
+    const oriTxt = ori && !/^ninguna$/i.test(ori) ? ori.charAt(0).toLowerCase() + ori.slice(1) : (fem ? "orientada en tiempo, espacio y persona" : "orientado en tiempo, espacio y persona");
+    const nm = (f.nombre.value || "[nombre]").toUpperCase();
+    if (alt.length || res[11] === "Presente") {
+      f.concl.value = `Al momento de la evaluación, ${ap} ${nm} presenta hallazgos en: ${alt.join(", ")}${res[11] === "Presente" ? (alt.length ? "; " : "") + "riesgo para sí o terceros" : ""}. [Completar la conclusión clínica.]`;
+    } else {
+      f.concl.value = `Al momento de la evaluación, ${ap} ${nm} se encuentra ${fem ? "lúcida" : "lúcido"}, ${oriTxt}, con funciones mentales superiores conservadas. No presenta alteraciones psicopatológicas que limiten su capacidad.\n\nSe ${fem ? "la" : "lo"} considera en BUEN ESTADO DE SALUD MENTAL.`;
+    }
+  };
+  $("#genc").onclick = gen;
+  f.onsubmit = (e) => {
+    e.preventDefault();
+    const p = readPatient(f); if (!p.cedula || !p.nombre) return toast("Falta la cédula o el nombre del paciente.");
+    if (!f.concl.value.trim()) gen();
+    const exam = FUNC.map(([n, h], i) => ({ n, h: h.replace("Orientado/a", p.sexo === "Femenino" ? "Orientada" : "Orientado").replace("colaborador/a", p.sexo === "Femenino" ? "colaboradora" : "colaborador").replace("Eutímico/a", p.sexo === "Femenino" ? "Eutímica" : "Eutímico"), r: $(`[data-i="${i}"]`, f).value, o: $(`[data-o="${i}"]`, f).value.trim() || "Ninguna" }));
+    const scales = SCALES.map(([k, n, ev, r, mx]) => { const na = $(`[data-na="${k}"]`, f).checked, v = $(`[data-s="${k}"]`, f).value; return { n, ev, r, s: na ? "No aplicado" : v === "" ? "—" : `${v} / ${mx}`, i: $(`[data-int="${k}"]`, f).value.trim() || "—" }; });
+    const doc = { folio: nextFolio("SM"), type: "SM", date: f.fecha.value || today(), status: "Emitida", patient: p,
+      data: { feval: f.feval.value, modal: f.modal.value, motivo: f.motivo.value, motivod: f.motivod.value.trim(), validez: f.validez.value, exam, scales,
+        psi: f.psi.value, psid: f.psid.value.trim(), ant: [f.a1.value, f.a2.value, f.a3.value, f.a4.value], concl: f.concl.value.trim() } };
+    storePatient(p); DB.docs.unshift(doc); save(); openDoc(doc); toast(`Certificado ${doc.folio} emitido y guardado.`); V.mental();
+  };
+};
+
+const GEN = {
+  "Certificado de buena salud": (ap, nm) => `Certifico que ${ap} ${nm} ha sido valorado/a clínicamente en la fecha indicada y, al momento del examen, no presenta enfermedad aguda ni signos que contraindiquen el desarrollo de sus actividades habituales.`,
+  "Certificado de reposo médico": (ap, nm, d) => `Certifico que ${ap} ${nm} fue atendido/a en la fecha indicada con diagnóstico de ${d.dx || "[diagnóstico]"}${d.cie ? " (CIE-10 " + d.cie + ")" : ""}, por lo que requiere reposo médico de ${d.dias || "[n]"} días, desde el ${d.desde ? fmt(d.desde) : "[fecha]"} hasta el ${d.hasta ? fmt(d.hasta) : "[fecha]"}.`,
+  "Certificado de asistencia a consulta": (ap, nm, d) => `Certifico que ${ap} ${nm} acudió a consulta médica el ${d.feval ? fmt(d.feval) : "[fecha]"}${d.hora ? " a las " + d.hora : ""}.`,
+};
+V.general = () => {
+  $("#main").innerHTML = `<h1>Otros certificados</h1><p class="sub">Folio que se asignará: <span class="tag">${nextFolio("CM", true)}</span>. Buena salud, reposo médico o asistencia a consulta.</p>
+  <form id="f">${patientFields(`<label class="span2">Ocupación<input name="ocupacion"></label>`)}
+  <div class="card"><h2>Certificado</h2><div class="grid">
+    <label class="span2">Tipo<select name="tipo">${Object.keys(GEN).map((k) => `<option>${k}</option>`).join("")}</select></label>
+    <label>Fecha de emisión<input type="date" name="fecha" value="${today()}"></label>
+    <label>Fecha de atención<input type="date" name="feval" value="${today()}"></label>
+    <label class="span2 rep">Diagnóstico<input name="dx"></label><label class="rep">CIE-10<input name="cie"></label><label class="asis">Hora<input type="time" name="hora"></label>
+    <label class="rep">Días de reposo<input type="number" name="dias" min="1"></label><label class="rep">Desde<input type="date" name="desde"></label><label class="rep">Hasta<input type="date" name="hasta"></label>
+    <label class="span4">Texto del certificado<textarea name="texto" style="min-height:120px"></textarea></label>
+  </div><div class="row" style="margin-top:8px"><button type="button" class="btn s sm" id="gent">Redactar texto</button><span class="hint">Revisa el texto antes de emitir.</span></div></div>
+  <div class="row"><button class="btn p">Emitir certificado y ver documento</button></div></form>`;
+  const f = $("#f"); wirePatient(f);
+  const vis = () => { const t = f.tipo.value; $$(".rep", f).forEach((e) => (e.style.display = t.includes("reposo") ? "" : "none")); $$(".asis", f).forEach((e) => (e.style.display = t.includes("asistencia") ? "" : "none")); };
+  const upd = () => { if (f.dias.value && f.desde.value) { const d = new Date(f.desde.value + "T00:00"); d.setDate(d.getDate() + (+f.dias.value) - 1); f.hasta.value = d.toISOString().slice(0, 10); } };
+  f.tipo.onchange = vis; f.dias.oninput = upd; f.desde.onchange = upd; vis();
+  const gen = () => { const fem = f.sexo.value === "Femenino"; let txt = GEN[f.tipo.value](fem ? "la paciente" : "el paciente", (f.nombre.value || "[nombre]").toUpperCase(), { dx: f.dx.value, cie: f.cie.value, dias: f.dias.value, desde: f.desde.value, hasta: f.hasta.value, feval: f.feval.value, hora: f.hora.value }); f.texto.value = txt.replace(/o\/a/g, fem ? "a" : "o"); };
+  $("#gent").onclick = gen;
+  f.onsubmit = (e) => {
+    e.preventDefault(); const p = readPatient(f); if (!p.cedula || !p.nombre) return toast("Falta la cédula o el nombre del paciente.");
+    if (!f.texto.value.trim()) gen();
+    const doc = { folio: nextFolio("CM"), type: "CM", date: f.fecha.value || today(), status: "Emitida", patient: p, data: { tipo: f.tipo.value, feval: f.feval.value, texto: f.texto.value.trim(), dx: f.dx.value.trim(), cie: f.cie.value.trim() } };
+    storePatient(p); DB.docs.unshift(doc); save(); openDoc(doc); toast(`Certificado ${doc.folio} emitido y guardado.`); V.general();
+  };
+};
+
+V.iess = () => {
+  $("#main").innerHTML = `<h1>Certificado IESS (reposo)</h1><p class="sub">Formato para justificar ante el IESS. Folio que se asignará: <span class="tag">${nextFolio("IE", true)}</span>.</p>
+  <form id="f">${patientFields(`<label class="span2">Domicilio<input name="domicilio"></label><label class="span2">Historia clínica<input name="hc" placeholder="Por defecto, la cédula"></label>
+    <label class="span2">Datos laborales (empresa o institución)<input name="empresa"></label><label class="span2">Puesto laboral<input name="cargo"></label>`)}
+  <div class="card"><h2>Atención</h2><div class="grid">
+    <label>Fecha de emisión<input type="date" name="fecha" value="${today()}"></label>
+    <label>Fecha de atención<input type="date" name="feval" value="${today()}"></label>
+    <label class="span2">Unidad médica<input name="unidad" value="SIGNO MEDICINA INTEGRAL"></label>
+    <label class="span4">Cuadro clínico<textarea name="cuadro" placeholder="Ej. dolor abdominal, alza térmica, náuseas que progresan al vómito"></textarea></label>
+    <label class="span4">Valoración<input name="valor" value="ES VALORADO(A) EN CONSULTA MÉDICA, CONCLUYENDO POSTERIOR A VALORACIÓN CLÍNICA."></label>
+  </div></div>
+  <div class="card"><h2>Diagnósticos</h2><table class="t" id="dxs"><thead><tr><th>Diagnóstico</th><th style="width:18%">CIE-10</th><th style="width:6%"></th></tr></thead><tbody></tbody></table>
+    <div class="row" style="margin-top:10px"><button type="button" class="btn s sm" id="adddx">+ Agregar diagnóstico</button></div></div>
+  <div class="card"><h2>Reposo</h2><div class="grid">
+    <label>Reposo médico<select name="reposo"><option>SI</option><option>NO</option></select></label>
+    <label class="span3">Tipo de contingencia<select name="cont"><option>ENFERMEDAD GENERAL</option><option>ACCIDENTE DE TRABAJO</option><option>ENFERMEDAD PROFESIONAL</option></select></label>
+    <label>Días de reposo<input type="number" name="dias" min="1" value="1"></label><label>Desde<input type="date" name="desde" value="${today()}"></label><label>Hasta<input type="date" name="hasta" value="${today()}"></label>
+    <label class="span4">Tratamiento<input name="trat" value="SE ENVIA TRATAMIENTO CLINICO Y VALORACIÓN."></label>
+  </div></div>
+  <div class="row"><button class="btn p">Emitir certificado y ver documento</button></div></form>`;
+  const f = $("#f"); wirePatient(f);
+  const tb = $("#dxs tbody");
+  const add = () => { const tr = document.createElement("tr"); tr.innerHTML = `<td><input data-k="dx"></td><td><input data-k="cie"></td><td><button type="button" class="btn d sm" aria-label="Quitar">✕</button></td>`; $("button", tr).onclick = () => tr.remove(); tb.appendChild(tr); };
+  $("#adddx").onclick = add; add();
+  const upd = () => { if (f.dias.value && f.desde.value) { const d = new Date(f.desde.value + "T00:00"); d.setDate(d.getDate() + (+f.dias.value) - 1); f.hasta.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; } };
+  f.dias.oninput = upd; f.desde.onchange = upd;
+  f.reposo.onchange = () => $$("[name=dias],[name=desde],[name=hasta]", f).forEach((i) => (i.closest("label").style.opacity = f.reposo.value === "SI" ? 1 : 0.4));
+  f.onsubmit = (e) => {
+    e.preventDefault(); const p = readPatient(f); if (!p.cedula || !p.nombre) return toast("Falta la cédula o el nombre del paciente.");
+    const dxs = $$("tr", tb).map((r) => ({ dx: $("[data-k=dx]", r).value.trim(), cie: $("[data-k=cie]", r).value.trim() })).filter((x) => x.dx);
+    if (!dxs.length) return toast("Agrega al menos un diagnóstico.");
+    const doc = { folio: nextFolio("IE"), type: "IE", date: f.fecha.value || today(), status: "Emitida", patient: p,
+      data: { hc: f.hc.value.trim() || p.cedula, feval: f.feval.value, unidad: f.unidad.value.trim(), cuadro: f.cuadro.value.trim(), valor: f.valor.value.trim(), dxs,
+        dx: dxs.map((x) => x.dx).join("; "), cie: dxs.map((x) => x.cie).join("; "), reposo: f.reposo.value, cont: f.cont.value, dias: f.dias.value, desde: f.desde.value, hasta: f.hasta.value, trat: f.trat.value.trim() } };
+    storePatient(p); DB.docs.unshift(doc); save(); openDoc(doc); toast(`Certificado ${doc.folio} emitido y guardado.`); V.iess();
+  };
+};
+
+V.registro = () => {
+  $("#main").innerHTML = `<h1>Registro de folios</h1><p class="sub">Todo lo emitido. Busca un folio cuando una farmacia o institución te pida verificarlo.</p>
+  <div class="card"><div class="row"><input id="q" placeholder="Buscar por folio, nombre o cédula" style="flex:1;min-width:240px">
+  <select id="ft"><option value="">Todos los tipos</option>${Object.entries(TYPES).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
+  <button class="btn s" id="csv">Exportar a Excel (CSV)</button></div></div>
+  <div class="card" id="res"></div>`;
+  const draw = () => {
+    const q = $("#q").value.toLowerCase().replace(/-/g, ""), ft = $("#ft").value;
+    const L = DB.docs.filter((d) => (!ft || d.type === ft) && (!q || (d.folio + d.patient.nombre + d.patient.cedula).toLowerCase().replace(/-/g, "").includes(q)));
+    $("#res").innerHTML = L.length ? `<table class="t"><thead><tr><th>Folio</th><th>Fecha</th><th>Tipo</th><th>Paciente</th><th>Cédula</th><th>Estado</th><th></th></tr></thead><tbody>${L.map((d) => `<tr><td class="tag">${d.folio}</td><td>${fmt(d.date)}</td><td>${d.type === "CM" ? esc(d.data.tipo) : TYPES[d.type]}</td><td>${esc(d.patient.nombre)}</td><td style="white-space:nowrap">${fmtCed(d.patient.cedula)}</td><td><span class="pill ${d.status === "Emitida" ? "ok" : "no"}">${d.status}</span></td><td class="row"><button class="btn s sm" data-v="${d.folio}">Ver / imprimir</button>${d.status === "Emitida" ? `<button class="btn d sm" data-a="${d.folio}">Anular</button>` : ""}</td></tr>`).join("")}</tbody></table>` : `<p class="hint">No hay documentos${q || ft ? " con ese filtro" : " todavía"}.</p>`;
+    $$("[data-v]", $("#res")).forEach((b) => (b.onclick = () => openDoc(DB.docs.find((d) => d.folio === b.dataset.v))));
+    $$("[data-a]", $("#res")).forEach((b) => (b.onclick = () => { if (confirm(`¿Anular el folio ${b.dataset.a}? Queda en el registro marcado como anulado.`)) { const d = DB.docs.find((x) => x.folio === b.dataset.a); d.status = "Anulada"; d.anulada = today(); save(); draw(); } }));
+  };
+  $("#q").oninput = draw; $("#ft").onchange = draw; draw();
+  $("#csv").onclick = () => {
+    const rows = [["Folio", "Fecha", "Tipo", "Paciente", "Cédula", "Diagnóstico", "CIE-10", "Estado"]].concat(DB.docs.map((d) => [d.folio, fmt(d.date), d.type === "CM" ? d.data.tipo : TYPES[d.type], d.patient.nombre, fmtCed(d.patient.cedula), d.data.dx || "", d.data.cie || "", d.status]));
+    download("﻿" + rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\r\n"), `Registro_folios_Signo_${today()}.csv`, "text/csv");
+  };
+};
+
+V.pacientes = () => {
+  const P = Object.values(DB.patients).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  $("#main").innerHTML = `<h1>Pacientes</h1><p class="sub">${P.length} pacientes guardados. Se agregan solos al emitir un documento.</p>
+  <div class="card"><input id="q" placeholder="Buscar por nombre o cédula" style="width:100%"></div><div class="card" id="res"></div>`;
+  const draw = () => {
+    const q = $("#q").value.toLowerCase();
+    const L = P.filter((p) => !q || (p.nombre + p.cedula).toLowerCase().includes(q));
+    $("#res").innerHTML = L.length ? `<table class="t"><thead><tr><th>Paciente</th><th>Cédula</th><th>Edad</th><th>Teléfono</th><th>Documentos</th><th></th></tr></thead><tbody>${L.map((p) => { const n = DB.docs.filter((d) => d.patient.cedula === p.cedula).length; return `<tr><td><b>${esc(p.nombre)}</b></td><td style="white-space:nowrap">${fmtCed(p.cedula)}</td><td>${p.nac ? edad(p.nac) + " años" : esc(p.edad || "")}</td><td>${esc(p.tel || "")}</td><td>${n}</td><td class="row"><button class="btn s sm" data-r="${p.cedula}">Receta</button><button class="btn s sm" data-h="${p.cedula}">Historial</button><button class="btn d sm" data-x="${p.cedula}">Borrar</button></td></tr>`; }).join("")}</tbody></table>` : `<p class="hint">Sin pacientes${q ? " con esa búsqueda" : " todavía"}.</p>`;
+    $$("[data-r]", $("#res")).forEach((b) => (b.onclick = () => { go("receta"); const f = $("#f"); f.cedula.value = b.dataset.r; f.cedula.dispatchEvent(new Event("change")); }));
+    $$("[data-h]", $("#res")).forEach((b) => (b.onclick = () => { go("registro"); $("#q").value = b.dataset.h; $("#q").dispatchEvent(new Event("input")); }));
+    $$("[data-x]", $("#res")).forEach((b) => (b.onclick = () => { if (confirm("¿Borrar los datos de este paciente? Sus documentos emitidos se conservan en el registro.")) { delete DB.patients[b.dataset.x]; save(); V.pacientes(); } }));
+  };
+  $("#q").oninput = draw; draw();
+};
+
+V.ajustes = () => {
+  const s = DB.settings;
+  const C = Object.keys(TYPES).map((k) => `<label>Próximo folio ${k}<input type="number" min="1" data-c="${k}" value="${(DB.counters[k] && DB.counters[k].year === new Date().getFullYear()) ? DB.counters[k].next : 1}"></label>`).join("");
+  $("#main").innerHTML = `<h1>Ajustes y respaldo</h1><p class="sub">Tus datos profesionales, la numeración de folios y las copias de seguridad.</p>
+  ${!DB.lastBackup || (Date.now() - DB.lastBackup) > 7 * 864e5 ? `<div class="banner"><b>Haz un respaldo.</b> Si se borran los datos del navegador, se pierden pacientes y registro. ${DB.lastBackup ? "Último respaldo: " + new Date(DB.lastBackup).toLocaleDateString("es-EC") : "Aún no has hecho ninguno."}</div>` : ""}
+  <div class="card"><h2>Respaldo</h2><div class="row">
+    <button class="btn p" id="bk">Descargar respaldo</button>
+    <button class="btn s" id="xl">Descargar base de datos (Excel)</button>
+    <label class="btn s" style="flex-direction:row;cursor:pointer">Restaurar respaldo<input type="file" id="rs" accept=".json" style="display:none"></label>
+    <label class="btn s" style="flex-direction:row;cursor:pointer">Combinar respaldo<input type="file" id="mg" accept=".json" style="display:none"></label>
+    <span class="hint">Guarda el archivo de respaldo en una carpeta segura o en la nube. Restaurar reemplaza los datos actuales.</span></div></div>
+  <form class="card" id="f"><h2>Datos del médico</h2><div class="grid">
+    <label class="span2">Nombre completo<input name="nombre" value="${esc(s.nombre)}"></label><label class="span2">Título<input name="titulo" value="${esc(s.titulo)}"></label>
+    <label>Cédula<input name="ci" value="${esc(s.ci)}"></label><label>Registro SENESCYT<input name="senescyt" value="${esc(s.senescyt)}"></label>
+    <label>Teléfono visible<input name="tel" value="${esc(s.tel)}"></label><label>WhatsApp (con 593)<input name="wa" value="${esc(s.wa)}"></label>
+    <label class="span2">Correo<input name="email" value="${esc(s.email)}"></label><label>Ciudad<input name="ciudad" value="${esc(s.ciudad)}"></label><label>Validez de recetas (días)<input type="number" name="validezRx" value="${esc(s.validezRx)}"></label>
+    <label class="span4">Dirección del consultorio<input name="dir" value="${esc(s.dir)}"></label>
+  </div><h2 style="margin-top:18px">Datos para los formularios MSP</h2><div class="grid">
+    <label>Institución del sistema<input name="inst" value="${esc(s.inst)}"></label><label>Unicódigo<input name="unicodigo" value="${esc(s.unicodigo)}" placeholder="El que asigna el MSP/ACESS"></label>
+    <label>Establecimiento de salud<input name="estab" value="${esc(s.estab)}"></label><label>Tipología<input name="tipologia" value="${esc(s.tipologia)}"></label>
+    <label>Provincia del consultorio<input name="estProv" value="${esc(s.estProv)}"></label><label>Cantón<input name="estCanton" value="${esc(s.estCanton)}"></label><label class="span2">Parroquia<input name="estParroq" value="${esc(s.estParroq)}"></label>
+    <label>Primer nombre (profesional)<input name="pn1" value="${esc(s.pn1)}"></label><label>Primer apellido<input name="pa1" value="${esc(s.pa1)}"></label><label>Segundo apellido<input name="pa2" value="${esc(s.pa2)}"></label>
+  </div><h2 style="margin-top:18px">Numeración de folios ${new Date().getFullYear()}</h2><div class="grid">${C}</div>
+  <p class="hint">Cambia el próximo folio solo para continuar la numeración de un talonario impreso (por ejemplo, si ya usaste las recetas 0001 a 0050, pon 51).</p>
+  <div class="row" style="margin-top:12px"><button class="btn p">Guardar ajustes</button></div></form>`;
+  $("#f").onsubmit = (e) => {
+    e.preventDefault(); const f = e.target;
+    ["nombre", "titulo", "ci", "senescyt", "tel", "wa", "email", "ciudad", "dir", "validezRx", "inst", "unicodigo", "estab", "tipologia", "pn1", "pa1", "pa2", "estProv", "estCanton", "estParroq"].forEach((k) => (DB.settings[k] = f[k].value.trim()));
+    $$("[data-c]", f).forEach((i) => { DB.counters[i.dataset.c] = { year: new Date().getFullYear(), next: Math.max(1, parseInt(i.value, 10) || 1) }; });
+    save(); toast("Ajustes guardados.");
+  };
+  $("#xl").onclick = () => { exportExcel(); toast("Base de datos descargada en Excel."); };
+  $("#bk").onclick = () => { DB.lastBackup = Date.now(); save(); download(JSON.stringify(DB, null, 1), `Respaldo_Signo_${today()}.json`, "application/json"); V.ajustes(); };
+  $("#mg").onchange = (e) => {
+    const file = e.target.files[0]; if (!file) return; const r = new FileReader();
+    r.onload = () => { try { const d = JSON.parse(r.result); if (!d.docs || !d.settings) throw 0; const n = mergeDB(d); toast(`Combinado: ${n.p} pacientes, ${n.d} documentos y ${n.a} atenciones nuevos o actualizados.`); V.ajustes(); } catch (x) { toast("Ese archivo no es un respaldo válido de Signo."); } };
+    r.readAsText(file);
+  };
+  $("#rs").onchange = (e) => {
+    const file = e.target.files[0]; if (!file) return; const r = new FileReader();
+    r.onload = () => { try { const d = JSON.parse(r.result); if (!d.docs || !d.settings) throw 0; if (!confirm(`Restaurar ${d.docs.length} documentos y ${Object.keys(d.patients || {}).length} pacientes? Se reemplazan los datos actuales.`)) return; localStorage.setItem(KEY, JSON.stringify(d)); load(); toast("Respaldo restaurado."); V.ajustes(); } catch (x) { toast("Ese archivo no es un respaldo válido de Signo."); } };
+    r.readAsText(file);
+  };
+};
+
+function download(text, name, type) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+
+/* ---------- documents ---------- */
+function qrSvg(text) { const q = qrcode(0, "M"); q.addData(text); q.make(); return q.createSvgTag({ cellSize: 3, margin: 0, scalable: true }); }
+function chrome(doc, orient) {
+  const s = DB.settings, wa = `https://wa.me/${s.wa}?text=${encodeURIComponent("Hola, quiero verificar el documento con folio " + doc.folio)}`;
+  const mt = `SIGNO MEDICINA INTEGRAL · DOCUMENTO ORIGINAL · ${doc.folio} · `.repeat(orient === "l" ? 6 : 4);
+  return {
+    head: (title, sub, hoja) => `<div class="lh"><img src="${LOGO}" alt="Signo"><div class="dr"><b>${esc(s.nombre)}</b><br>${esc(s.titulo)}<br>Registro SENESCYT ${esc(s.senescyt)}</div></div>
+      <div class="tb"><div class="tt"><b>${title}</b><span>${sub}</span></div><div class="fb"><small>FOLIO</small><b>${doc.folio}</b><i>${hoja || "Emitido: " + fmt(doc.date)}</i></div></div>`,
+    foot: `<svg class="ecg" viewBox="0 0 1000 24" preserveAspectRatio="none"><path d="M0 15 H600 L612 15 L622 9 L632 15 L640 15 L650 1 L662 23 L670 15 H1000" fill="none" stroke="#0B7A72" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>
+      <div class="pf"><div class="tx">${esc(s.dir)} · WhatsApp <a href="https://wa.me/${s.wa}">${esc(s.tel)}</a> · <a href="mailto:${esc(s.email)}">${esc(s.email)}</a><br>
+      <a href="${wa}">Folio ${doc.folio} · Verifique la autenticidad escaneando el código o escribiendo al ${esc(s.tel)}</a>${doc.status === "Anulada" ? ' · <b style="color:#B4532A">DOCUMENTO ANULADO</b>' : ""}<div class="mt">${mt}</div></div>
+      <a class="qr" href="${wa}">${qrSvg(wa)}</a></div>`,
+    sig: (mode) => mode === "m" ? `<div class="who"><div class="line"></div><b>${esc(s.nombre)}</b><br>Médico · C.I. ${fmtCed(s.ci)}<br>Registro SENESCYT ${esc(s.senescyt)} · Firma y sello</div>`
+      : `<div class="who"><small>FIRMADO ELECTRÓNICAMENTE POR</small><b>${esc(s.nombre)}</b><br>Médico · C.I. ${fmtCed(s.ci)}<br>Registro SENESCYT ${esc(s.senescyt)}<br>${esc(s.email)}</div>`,
+    wm: `<img class="wm" src="${WM}" alt="">`,
+  };
+}
+const ptable = (p, extra = []) => {
+  const rows = [["Cédula", fmtCed(p.cedula), "Edad", p.edad || (p.nac ? edad(p.nac) + " años" : "")], ["Fecha de nacimiento", fmt(p.nac), "Sexo", p.sexo], ...extra];
+  return `<table class="d"><tr><td class="l">Paciente</td><td colspan="3"><b>${esc(p.nombre)}</b></td></tr>${rows.map((r) => `<tr><td class="l">${r[0]}</td><td><b>${esc(r[1])}</b></td><td class="l">${r[2]}</td><td><b>${esc(r[3])}</b></td></tr>`).join("")}</table>`;
+};
+
+function renderRX(doc, mode) {
+  const c = chrome(doc, "l"), s = DB.settings, d = doc.data, p = doc.patient;
+  const pages = []; for (let i = 0; i < Math.max(1, d.meds.length); i += 8) pages.push(d.meds.slice(i, i + 8));
+  const pinfo = (full) => `<table class="d"><tr><td class="l">Paciente</td><td colspan="3"><b>${esc(p.nombre)}</b></td></tr>
+    <tr><td class="l">Cédula</td><td><b>${fmtCed(p.cedula)}</b></td><td class="l">Fecha</td><td><b>${fmt(doc.date)}</b></td></tr>
+    ${full ? `<tr><td class="l">Edad</td><td><b>${esc(p.edad || (p.nac ? edad(p.nac) + " años" : ""))}</b></td><td class="l">Sexo</td><td><b>${esc(p.sexo)}</b></td></tr>
+    <tr><td class="l">Diagnóstico</td><td colspan="2"><b>${esc(d.dx)}</b></td><td><span class="sm">CIE-10:</span> <b>${esc(d.cie)}</b></td></tr>
+    <tr><td class="l">Alergias</td><td colspan="3"><b>${esc(p.alergias || "No refiere")}</b></td></tr>` : ""}</table>`;
+  return pages.map((meds, pi) => {
+    const hoja = `Hoja ${pi + 1} de ${pages.length}`, off = pi * 8;
+    const fill = (n) => Array.from({ length: 8 - n }, (_, k) => k === 0 ? "—" : "");
+    const left = `${c.head("RECETA MÉDICA", "Para la farmacia · Prescripción por nombre genérico (DCI)", hoja)}${pinfo(true)}<div class="rp">Rp.</div>
+      <table class="d"><tr><th style="width:5%">#</th><th style="width:37%">Medicamento (DCI)</th><th>Concentración</th><th>Forma farm.</th><th style="width:24%">Cantidad</th></tr>
+      ${meds.map((m, i) => `<tr><td>${off + i + 1}.</td><td><b>${esc(m.dci)}</b></td><td>${esc(m.conc)}</td><td>${esc(m.forma)}</td><td><b>${esc(m.cant)}</b>${m.letras ? ` (${m.letras})` : ""}</td></tr>`).join("")}
+      ${fill(meds.length).map((x, k) => `<tr><td>${off + meds.length + k + 1}.</td><td>${x}</td><td></td><td></td><td></td></tr>`).join("")}</table>
+      <div class="sm"><i>Válida por ${esc(s.validezRx)} días desde su emisión. Sin enmendaduras.</i></div><div class="sig">${c.sig(mode)}</div>`;
+    const right = `${c.head("INDICACIONES", "Para el paciente · Cómo tomar su medicación", hoja)}${pinfo(false)}
+      <table class="d"><tr><th style="width:5%">#</th><th style="width:31%">Medicamento</th><th>Dosis</th><th>Vía</th><th>Frecuencia</th><th>Duración</th></tr>
+      ${meds.map((m, i) => `<tr><td>${off + i + 1}.</td><td><b>${esc(m.dci)}</b> ${esc(m.conc)}</td><td>${esc(m.dosis)}</td><td>${esc(m.via)}</td><td>${esc(m.frec)}</td><td>${esc(m.dur)}</td></tr>`).join("")}
+      ${fill(meds.length).map((x, k) => `<tr><td>${off + meds.length + k + 1}.</td><td>${x}</td><td></td><td></td><td></td><td></td></tr>`).join("")}</table>
+      ${pi === pages.length - 1 ? `<div class="sec">RECOMENDACIONES</div><div class="blank" style="white-space:pre-wrap">${esc(d.recom)}</div>
+      <div class="sec">ACUDA DE INMEDIATO SI PRESENTA</div><div class="blank" style="white-space:pre-wrap">${esc(d.alarma)}</div>
+      <div style="font-size:8.6pt;margin-top:6px"><b>Próximo control:</b> ${d.control ? fmt(d.control) : "____ / ____ / ________"} &nbsp; <span style="color:#0B7A72;font-weight:700">Citas y dudas: WhatsApp ${esc(s.tel)}</span></div>` : ""}
+      <div class="sig">${c.sig(mode)}</div>`;
+    return `<div class="page a4l">${c.wm}<div class="z halves"><div>${left}</div><div>${right}</div></div>${c.foot}</div>`;
+  }).join("");
+}
+
+function renderSM(doc, mode) {
+  const c = chrome(doc, "p"), d = doc.data, p = doc.patient, s = DB.settings;
+  const motivos = ["Ingreso o requisito laboral", "Requisito académico", "Trámite legal o administrativo", "Otro"];
+  const chk = (on, t) => `<span style="margin-right:12px">${on ? "☒" : "☐"} ${on ? "<b>" + t + "</b>" : t}</span>`;
+  const p1 = `${c.head("CERTIFICADO MÉDICO", "de buen estado de salud mental")}
+    <div style="text-align:right;font-size:9.4pt;margin-bottom:5px">${esc(s.ciudad)}, ${largo(doc.date)}</div>
+    <div style="font-size:9.4pt;margin-bottom:6px">El suscrito, médico legalmente autorizado para el ejercicio profesional, <b>CERTIFICA</b> que ha evaluado a:</div>
+    ${ptable(p, [["Ocupación", p.ocupacion || "", "Fecha de evaluación", fmt(d.feval)], ["Modalidad", d.modal, "Lugar", s.ciudad]])}
+    <div style="font-size:8.8pt;margin:4px 0 2px"><b>Motivo de la certificación:</b> ${motivos.map((m) => chk(d.motivo === m, m + (m === "Otro" && d.motivo === "Otro" && d.motivod ? ": " + esc(d.motivod) : ""))).join("")}</div>
+    ${d.motivod && d.motivo !== "Otro" ? `<div class="sm">Detalle: ${esc(d.motivod)}</div>` : ""}
+    <div class="sec"><em>01</em>EXAMEN DEL ESTADO MENTAL</div>
+    <table class="d"><tr><th>Función evaluada</th><th>Hallazgo esperado</th><th>Resultado</th><th>Observaciones</th></tr>
+    ${d.exam.map((e) => `<tr><td>${esc(e.n)}</td><td>${esc(e.h)}</td><td><b>${esc(e.r)}</b></td><td>${esc(e.o)}</td></tr>`).join("")}</table>
+    <div class="sec"><em>02</em>INSTRUMENTOS DE TAMIZAJE APLICADOS</div>
+    <table class="d"><tr><th>Instrumento</th><th>Evalúa</th><th>Rango sin alteración</th><th>Puntaje</th><th>Interpretación</th></tr>
+    ${d.scales.map((x) => `<tr><td>${esc(x.n)}</td><td>${esc(x.ev)}</td><td>${esc(x.r)}</td><td><b>${esc(x.s)}</b></td><td>${esc(x.i)}</td></tr>`).join("")}</table>
+    <div class="sm"><i>El punto de corte del MMSE se ajusta según la edad y la escolaridad.</i> &nbsp; <b>Valoración psicológica complementaria:</b> ${esc(d.psi)}${d.psid ? " · " + esc(d.psid) : ""}</div>`;
+  const ant = ["Antecedentes psiquiátricos o psicológicos", "Hospitalizaciones por salud mental", "Consumo de sustancias", "Medicación actual"];
+  const p2 = `${c.head("CERTIFICADO MÉDICO", "de buen estado de salud mental", "Página 2 de 2")}
+    <div class="sec"><em>03</em>ANTECEDENTES RELEVANTES</div>
+    <table class="d"><tr><th>Antecedente</th><th>Detalle</th></tr>${ant.map((a, i) => `<tr><td>${a}</td><td>${esc(d.ant[i])}</td></tr>`).join("")}</table>
+    <div class="sec"><em>04</em>CONCLUSIÓN</div><div class="concl">${esc(d.concl)}\n\n<span class="sm">Validez del certificado: ${esc(d.validez)} días a partir de la fecha de emisión.</span></div>
+    <div class="sec"><em>05</em>NOTA ACLARATORIA</div>
+    <div class="sm" style="text-align:justify">Este certificado describe el estado de ${p.sexo === "Femenino" ? "la paciente" : "el paciente"} al momento de la evaluación. Se basa en el examen clínico y en instrumentos de tamizaje; no reemplaza una evaluación psicológica o psiquiátrica especializada. Se extiende a petición ${p.sexo === "Femenino" ? "de la interesada" : "del interesado"} para los fines que estime convenientes.</div>
+    <div class="sig">${c.sig(mode)}</div>
+    ${mode === "e" ? `<div class="sm" style="text-align:center;margin-top:8px"><i>Documento firmado electrónicamente conforme a la Ley de Comercio Electrónico, Firmas Electrónicas y Mensajes de Datos del Ecuador.</i></div>` : ""}`;
+  return `<div class="page a4p">${c.wm}<div class="z">${p1}</div>${c.foot}</div><div class="page a4p">${c.wm}<div class="z">${p2}</div>${c.foot}</div>`;
+}
+
+function renderCM(doc, mode) {
+  const c = chrome(doc, "p"), d = doc.data, p = doc.patient, s = DB.settings;
+  const sub = d.tipo.replace("Certificado de ", "de ");
+  return `<div class="page a4p">${c.wm}<div class="z">${c.head("CERTIFICADO MÉDICO", sub)}
+    <div style="text-align:right;font-size:9.4pt;margin-bottom:8px">${esc(s.ciudad)}, ${largo(doc.date)}</div>
+    ${ptable(p, [["Ocupación", p.ocupacion || "", "Fecha de atención", fmt(d.feval)]])}
+    <div class="sec"><em>01</em>CERTIFICACIÓN</div><div class="concl" style="font-size:10.4pt;line-height:1.6">${esc(d.texto)}</div>
+    <div class="sm" style="margin-top:8px">Se extiende el presente certificado a petición ${p.sexo === "Femenino" ? "de la interesada" : "del interesado"} para los fines que estime convenientes.</div>
+    <div class="sig" style="margin-top:22mm">${c.sig(mode)}</div>
+    ${mode === "e" ? `<div class="sm" style="text-align:center;margin-top:8px"><i>Documento firmado electrónicamente conforme a la Ley de Comercio Electrónico, Firmas Electrónicas y Mensajes de Datos del Ecuador.</i></div>` : ""}
+    </div>${c.foot}</div>`;
+}
+
+function renderIE(doc, mode) {
+  const c = chrome(doc, "p"), d = doc.data, p = doc.patient, s = DB.settings, U = (x) => esc(String(x || "").toUpperCase());
+  const fem = p.sexo === "Femenino", [y, m, dd] = doc.date.split("-").map(Number);
+  const box = (on) => (on ? "(X)" : "(&nbsp;&nbsp;)");
+  const conts = ["ENFERMEDAD GENERAL", "ACCIDENTE DE TRABAJO", "ENFERMEDAD PROFESIONAL"];
+  const dias = +d.dias || 0;
+  return `<div class="page a4p">${c.wm}<div class="z ie">
+    <div class="lh"><img src="${LOGO}" alt="Signo"><div class="dr"><b>${esc(s.nombre)}</b><br>${esc(s.titulo)}<br>${esc(s.dir)}<br>Celular: ${esc(s.tel)} · Email: ${esc(s.email)}</div></div>
+    <div style="display:flex;justify-content:space-between;font-size:10.5pt;margin:4mm 0 6mm"><span class="sm">Folio <b class="tag">${doc.folio}</b></span><span>${esc(s.ciudad)}, ${dd} de ${MESES[m - 1].toUpperCase()} del ${y}</span></div>
+    <div style="text-align:center;font-weight:700;font-size:12pt;margin-bottom:6mm">CERTIFICADO MÉDICO</div>
+    <p class="iep">CERTIFICO QUE ${fem ? "LA PACIENTE" : "EL PACIENTE"}, <b>${U(p.nombre)},</b> CON <b>CI. ${esc(p.cedula)}</b>, ACUDE A ESTA CASA DE SALUD EL ${d.feval ? (([yy, mm, dd2]) => `${+dd2} DE ${MESES[+mm - 1].toUpperCase()} DEL ${yy}`)(d.feval.split("-")) : ""} EN LA UNIDAD MEDICA: <b>${U(d.unidad)}</b>, CON CUADRO CLINICO DE <b>${U(d.cuadro)},</b> ${U(d.valor).replace("VALORADO(A)", fem ? "VALORADA" : "VALORADO")}</p>
+    <p class="iep" style="margin-bottom:1mm"><b>Diagnóstico:</b></p>
+    <ul class="iel">${d.dxs.map((x) => `<li><b>${U(x.dx)}${x.cie ? " – CIE10: " + U(x.cie) : ""}</b></li>`).join("")}</ul>
+    <div class="ied">
+      <div>DATOS LABORALES: ${U(p.empresa)}</div><div>PUESTO LABORAL: ${U(p.cargo)}</div><div>DOMICILIO: ${U(p.domicilio)}</div>
+      <div>TELEFONO: ${esc(p.tel)}</div><div>HISTORIA CLINICA: ${esc(d.hc)}</div>
+      <div>REPOSO MEDICO: SI ${box(d.reposo === "SI")} NO ${box(d.reposo === "NO")}</div>
+      <div>TIPO DE CONTINGENCIA: ${conts.map((x) => `${x} ${box(d.cont === x)}`).join("&nbsp;&nbsp; ")}</div>
+      <div style="margin-top:4mm">${U(d.trat)}</div>
+      ${d.reposo === "SI" ? `<div style="margin-top:4mm">SE INDICA REPOSO MEDICO POR ${letras(dias).toUpperCase()} (${dias}) ${dias === 1 ? "DIA" : "DIAS"}.</div>
+      <div>DESDE: ${fmt(d.desde)} – (${fechaLetras(d.desde)})</div><div>HASTA: ${fmt(d.hasta)} – (${fechaLetras(d.hasta)})</div>` : ""}
+    </div>
+    <p class="iep" style="margin-top:6mm">Atentamente,</p>
+    <div class="sig" style="margin-top:2mm">${mode === "m" ? `<div class="who"><div class="line"></div>` : `<div class="who"><small>FIRMADO ELECTRÓNICAMENTE POR</small>`}
+      <div style="font-size:10pt;color:#12263A;line-height:1.45">${U(s.nombre.replace(/^Dr\.?\s*/i, ""))}.<br>MEDICO.<br>CI. ${esc(s.ci)}<br>REG. SEN. ${esc(s.senescyt)}<br>Correo electrónico: ${esc(s.email)}</div></div></div>
+    </div>${c.foot}</div>`;
+}
+
+let CUR = null;
+function renderDoc(doc, mode) { return doc.type === "RX" ? renderRX(doc, mode) : doc.type === "SM" ? renderSM(doc, mode) : doc.type === "IE" ? renderIE(doc, mode) : doc.type === "OL" ? renderOL(doc, mode) : renderCM(doc, mode); }
+function openDoc(doc) {
+  if (!doc) return; CUR = doc; PVMODE = "doc"; $("#sigwrap").style.display = "";
+  $("#mtitle").textContent = `${doc.folio} · ${doc.patient.nombre}`;
+  $("#mhint").textContent = doc.status === "Anulada" ? "Documento anulado" : "Revisa antes de imprimir. En la ventana de impresión elige «Guardar como PDF» para firmarlo electrónicamente.";
+  const draw = () => { $("#pv").innerHTML = renderDoc(doc, $("#sigmode").value); fitPreview(); };
+  $("#sigmode").onchange = draw; $("#modal").style.display = "block"; draw();
+}
+$("#mclose").onclick = () => { if (PVMODE === "msp") captureManual(); $("#modal").style.display = "none"; };
+/* combinar un respaldo con los datos actuales (sin borrar nada) */
+function mergeDB(d) {
+  const n = { p: 0, d: 0, a: 0 };
+  Object.values(d.patients || {}).forEach((p) => { const o = DB.patients[p.cedula]; if (!o || (p.updated || "") > (o.updated || "")) { DB.patients[p.cedula] = Object.assign({}, o || {}, p); n.p++; } else if (p.medidas && p.medidas.length) { const f = new Set((o.medidas || []).map((m) => m.fecha)); o.medidas = (o.medidas || []).concat(p.medidas.filter((m) => !f.has(m.fecha))); } });
+  const fol = new Map(DB.docs.map((x, i) => [x.folio, i]));
+  (d.docs || []).forEach((x) => { if (!fol.has(x.folio)) { DB.docs.push(x); n.d++; } else if (x.status === "Anulada" && DB.docs[fol.get(x.folio)].status !== "Anulada") { DB.docs[fol.get(x.folio)] = x; n.d++; } });
+  DB.docs.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.folio < b.folio ? 1 : -1));
+  const ids = new Set((DB.atenciones || []).map((x) => x.id));
+  (d.atenciones || []).forEach((x) => { if (!ids.has(x.id)) { DB.atenciones.push(x); n.a++; } });
+  Object.entries(d.counters || {}).forEach(([k, c]) => { const o = DB.counters[k]; if (!o || (c.year === o.year && c.next > o.next) || c.year > o.year) DB.counters[k] = c; });
+  if (d.atCount && (!DB.atCount || d.atCount.next > DB.atCount.next)) DB.atCount = d.atCount;
+  save(); return n;
+}
+/* en pantallas pequeñas, achicar la vista previa para que quepa (no afecta la impresión) */
+function fitPreview() {
+  const pv = $("#pv"); if (!pv) return; const w = pv.clientWidth - 16;
+  $$("#pv > .page, #pv > .mspp").forEach((p) => { p.style.zoom = ""; const pw = p.offsetWidth; p.style.zoom = pw > w && w > 100 ? (w / pw).toFixed(3) : ""; });
+}
+addEventListener("resize", () => { if ($("#modal").style.display === "block") fitPreview(); });
+/* versión web: funcionar sin internet e instalarse como aplicación */
+if (/^https?:/.test(location.protocol) && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+$("#sendwa").onclick = () => sendDialog("wa");
+$("#sendmail").onclick = () => sendDialog("mail");
+$("#doprint").onclick = () => {
+  if (PVMODE === "msp") {
+    captureManual();
+    $("#pagecss").textContent = "@page{margin:0}";
+    const pr = $("#print"); pr.innerHTML = "";
+    $$("#pv .mspp").forEach((p) => { const c = p.cloneNode(true); c.classList.remove("edit"); c.style.zoom = ""; pr.appendChild(c); });
+    const at = PVPAGES && PVPAGES.at, old = document.title;
+    document.title = at ? `${at.id}_${at.patient.nombre.replace(/\s+/g, "_")}_HCU` : "Formularios_MSP";
+    setTimeout(() => { window.print(); document.title = old; }, 150);
+    return;
+  }
+  if (!CUR) return;
+  $("#pagecss").textContent = `@page{size:A4 ${CUR.type === "RX" ? "landscape" : "portrait"};margin:0}`;
+  $("#print").innerHTML = renderDoc(CUR, $("#sigmode").value);
+  const old = document.title; document.title = `${CUR.folio}_${CUR.patient.nombre.replace(/\s+/g, "_")}`;
+  setTimeout(() => { window.print(); document.title = old; }, 150);
+};
+
+__SENDJS__
+__LABJS__
+__XLSXJS__
+__SIVEJS__
+__GROWTHJS__
+__ATENCION__
+/* ---------- navigation ---------- */
+function go(v) { $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.v === v)); V[v](); window.scrollTo(0, 0); }
+$$("nav button").forEach((b) => (b.onclick = () => go(b.dataset.v)));
+go("atencion");
+</script>
+</body>
+</html>
