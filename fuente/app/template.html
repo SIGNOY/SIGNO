@@ -84,6 +84,13 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
 .olg ul{margin:0;padding-left:5mm}.olg li{line-height:1.45}
 .sendlg{position:fixed;inset:0;background:#12263A99;z-index:90;display:none;align-items:center;justify-content:center;padding:16px}
 .sdbox{background:#fff;border-radius:14px;padding:18px 20px;max-width:560px;width:100%;box-shadow:0 20px 60px #0005}.sdbox ol{padding-left:18px;margin:12px 0}.sdbox li{margin-bottom:12px}.sdbox label{margin:8px 0}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:0 18px}.fgrid p{margin:0 0 8px}
+.dxtags{display:flex;flex-wrap:wrap;gap:6px}.dxtags span{background:var(--soft);border-radius:8px;padding:4px 9px;font-size:13px}
+.mcharts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mchart{width:100%;height:auto;background:#fafcfc;border:1px solid var(--line);border-radius:10px}
+.tl{border-left:3px solid var(--mint);margin-left:56px;padding-left:0}.tli{display:flex;gap:12px;margin:0 0 14px -59px}.tld{width:62px;flex-shrink:0;text-align:right;font-size:12px;font-weight:700;color:var(--grey);padding-top:10px}
+.tlb{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;position:relative;font-size:14px}.tlb>div{margin-top:4px}
+.tli.at .tlb{border-left:4px solid var(--teal)}.tli.doc .tlb{border-left:4px solid var(--pale);background:#fbfdfd}
+.prevat{background:#E8F1F1;border:1px solid var(--mint);border-radius:12px;padding:10px 14px;margin-top:12px;font-size:14px}
 .pvh{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin:4px auto 8px;max-width:1123px}
 @media (max-width:900px){.grid.g6{grid-template-columns:repeat(2,minmax(0,1fr))}.chks{grid-template-columns:repeat(2,minmax(0,1fr))}.app{flex-direction:column}
   nav{width:auto;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px;gap:4px;position:sticky;top:0;z-index:40;-webkit-overflow-scrolling:touch}
@@ -91,7 +98,8 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:16px 14px 80px}h1{font-size:22px}
   .card{padding:16px 14px}.modal .box{margin:0;border-radius:0;min-height:100vh;padding:12px}.preview{padding:8px}
   table.t{font-size:13px}.row .btn{flex:1 1 auto}}
-@media (max-width:560px){.grid,.grid.g6{grid-template-columns:minmax(0,1fr)}.span2,.span3,.span4,.span5,.span6{grid-column:1/-1}.chks{grid-template-columns:minmax(0,1fr)}
+@media (max-width:900px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.mcharts{grid-template-columns:minmax(0,1fr)}.tl{margin-left:0;border-left:0}.tli{margin-left:0;flex-direction:column;gap:2px}.tld{width:auto;text-align:left;padding-top:0}.grid,.grid.g6{grid-template-columns:minmax(0,1fr)}.span2,.span3,.span4,.span5,.span6{grid-column:1/-1}.chks{grid-template-columns:minmax(0,1fr)}
   #meds thead{display:none}#meds tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}#meds td{border:0;padding:0}#meds td.n{display:none}
   #meds td:nth-child(2){grid-column:1/-1}
   #fa > .row[style*="sticky"]{position:static!important;border-top:0}}
@@ -509,8 +517,9 @@ V.pacientes = () => {
   const draw = () => {
     const q = $("#q").value.toLowerCase();
     const L = P.filter((p) => !q || (p.nombre + p.cedula).toLowerCase().includes(q));
-    $("#res").innerHTML = L.length ? `<table class="t"><thead><tr><th>Paciente</th><th>Cédula</th><th>Edad</th><th>Teléfono</th><th>Documentos</th><th></th></tr></thead><tbody>${L.map((p) => { const n = DB.docs.filter((d) => d.patient.cedula === p.cedula).length; return `<tr><td><b>${esc(p.nombre)}</b></td><td style="white-space:nowrap">${fmtCed(p.cedula)}</td><td>${p.nac ? edad(p.nac) + " años" : esc(p.edad || "")}</td><td>${esc(p.tel || "")}</td><td>${n}</td><td class="row"><button class="btn s sm" data-r="${p.cedula}">Receta</button><button class="btn s sm" data-h="${p.cedula}">Historial</button><button class="btn d sm" data-x="${p.cedula}">Borrar</button></td></tr>`; }).join("")}</tbody></table>` : `<p class="hint">Sin pacientes${q ? " con esa búsqueda" : " todavía"}.</p>`;
+    $("#res").innerHTML = L.length ? `<table class="t"><thead><tr><th>Paciente</th><th>Cédula</th><th>Edad</th><th>Teléfono</th><th>Documentos</th><th></th></tr></thead><tbody>${L.map((p) => { const n = DB.docs.filter((d) => d.patient.cedula === p.cedula).length; return `<tr><td><b>${esc(p.nombre)}</b></td><td style="white-space:nowrap">${fmtCed(p.cedula)}</td><td>${p.nac ? edad(p.nac) + " años" : esc(p.edad || "")}</td><td>${esc(p.tel || "")}</td><td>${n}</td><td class="row"><button class="btn p sm" data-fi="${p.cedula}">Ficha clínica</button><button class="btn s sm" data-r="${p.cedula}">Receta</button><button class="btn s sm" data-h="${p.cedula}">Folios</button><button class="btn d sm" data-x="${p.cedula}">Borrar</button></td></tr>`; }).join("")}</tbody></table>` : `<p class="hint">Sin pacientes${q ? " con esa búsqueda" : " todavía"}.</p>`;
     $$("[data-r]", $("#res")).forEach((b) => (b.onclick = () => { go("receta"); const f = $("#f"); f.cedula.value = b.dataset.r; f.cedula.dispatchEvent(new Event("change")); }));
+    $$("[data-fi]", $("#res")).forEach((b) => (b.onclick = () => { V.ficha(b.dataset.fi); window.scrollTo(0, 0); }));
     $$("[data-h]", $("#res")).forEach((b) => (b.onclick = () => { go("registro"); $("#q").value = b.dataset.h; $("#q").dispatchEvent(new Event("input")); }));
     $$("[data-x]", $("#res")).forEach((b) => (b.onclick = () => { if (confirm("¿Borrar los datos de este paciente? Sus documentos emitidos se conservan en el registro.")) { delete DB.patients[b.dataset.x]; save(); V.pacientes(); } }));
   };
@@ -735,6 +744,7 @@ $("#doprint").onclick = () => {
   setTimeout(() => { window.print(); document.title = old; }, 150);
 };
 
+__FICHAJS__
 __SENDJS__
 __LABJS__
 __XLSXJS__

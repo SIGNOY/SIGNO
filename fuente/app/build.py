@@ -2,6 +2,7 @@ import base64, json, os, sys
 d = os.path.dirname(os.path.abspath(__file__))
 t = open(os.path.join(d, "template.html"), encoding="utf-8").read()
 safe = lambda x: x.replace("</script", "<\\/script").replace("</SCRIPT", "<\\/SCRIPT")
+t = t.replace("__FICHAJS__", open(os.path.join(d, "ficha.js"), encoding="utf-8").read())
 t = t.replace("__SENDJS__", open(os.path.join(d, "send.js"), encoding="utf-8").read())
 t = t.replace("__LABJS__", open(os.path.join(d, "lab.js"), encoding="utf-8").read())
 t = t.replace("__XLSXJS__", open(os.path.join(d, "xlsx.js"), encoding="utf-8").read())

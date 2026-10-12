@@ -73,7 +73,7 @@ V.atencion = (at) => {
     <label class="span3">Domicilio<input name="domicilio" value="${v("domicilio", P)}"></label>
     <label>N.º historia clínica<input name="hcu" value="${v("hcu", P)}" placeholder="La cédula"></label><label>N.º archivo<input name="archivo" value="${v("archivo", P)}" placeholder="La cédula"></label>
     <label class="span4">Alergias<input name="alergias" value="${v("alergias", P)}" placeholder="Niega, o detalla"></label>
-  </div><datalist id="pl">${opts}</datalist></div>
+  </div><div id="prevat"></div><datalist id="pl">${opts}</datalist></div>
 
   <div class="card"><h2>Consulta</h2><div class="grid g6">
     <label>Fecha<input type="date" name="fecha" value="${v("fecha")}"></label><label>Hora<input type="time" name="hora" value="${v("hora") || new Date().toTimeString().slice(0, 5)}"></label>
@@ -183,7 +183,26 @@ V.atencion = (at) => {
       const sp = p.ap1 ? p : Object.assign({}, p, splitName(p.nombre));
       ["ap1", "ap2", "n1", "n2", "nac", "sexo", "tel", "email", "ocupacion", "empresa", "domicilio", "prov", "canton", "parroq", "alergias", "hcu", "archivo"].forEach((k) => { if (f[k] && sp[k] != null && sp[k] !== "") f[k].value = sp[k]; });
       f.nac.dispatchEvent(new Event("change")); msg.textContent = "Paciente encontrado: datos cargados."; msg.className = "hint";
+      prevVisit(c);
     } else if (c.length === 10) { msg.textContent = cedulaOk(c) ? "Cédula válida. Paciente nuevo." : "Revisa la cédula: el dígito verificador no coincide."; msg.className = cedulaOk(c) ? "hint" : "hint warnt"; }
+  };
+  // consulta subsecuente: copiar antecedentes y mostrar la última atención
+  const prevVisit = (c) => {
+    const box = $("#prevat"); if (f._prevFor === c) return; f._prevFor = c;
+    const prev = (DB.atenciones || []).filter((a) => a.patient && a.patient.cedula === c && a.id !== A.id).sort((a, b) => (a.fecha + (a.hora || "") < b.fecha + (b.hora || "") ? 1 : -1));
+    if (!prev.length) { box.innerHTML = ""; return; }
+    const L = prev[0];
+    if (!A.id) {
+      f.tipo.value = "Subsecuente";
+      if (!f.antp.value && L.antp) f.antp.value = L.antp; if (!f.antf.value && L.antf) f.antf.value = L.antf;
+      ["antp", "antf"].forEach((g) => Object.keys((L.checks && L.checks[g]) || {}).forEach((k) => { const i = $(`[data-g="${g}"][value="${k}"]`, f); if (i) i.checked = true; }));
+    }
+    box.innerHTML = `<div class="prevat"><b>Paciente con ${prev.length} atención(es) anterior(es).</b> Última: <b>${fmt(L.fecha)}</b>${L.motivo ? " · " + esc(L.motivo) : ""}<br>
+      ${(L.dx || []).length ? `<span class="hint">Dx:</span> ${L.dx.map((d) => esc(d.d) + (d.cie ? " (" + esc(d.cie) + ")" : "")).join("; ")}<br>` : ""}
+      ${L.vit && L.vit.pa ? `<span class="hint">PA ${esc(L.vit.pa)}${L.vit.peso ? " · Peso " + esc(L.vit.peso) + " kg" : ""}${L.vit.glu ? " · Glucosa " + esc(L.vit.glu) : ""}</span><br>` : ""}
+      ${L.plan ? `<span class="hint">Plan:</span> ${esc(L.plan.length > 220 ? L.plan.slice(0, 220) + "…" : L.plan)}<br>` : ""}
+      ${!A.id ? '<span class="hint">Se marcó como consulta subsecuente y se copiaron los antecedentes; revísalos.</span> ' : ""}<button type="button" class="btn s sm" id="verficha">Ver ficha clínica completa</button></div>`;
+    $("#verficha").onclick = () => { V.ficha(c); window.scrollTo(0, 0); };
   };
   ced.addEventListener("change", fillP); ced.addEventListener("input", () => { if (ced.value.replace(/\D/g, "").length === 10) fillP(); });
   f.nac.addEventListener("change", () => { const e = edad(f.nac.value, f.fecha.value); if (e !== "") f.edad.value = e + " años"; });

@@ -84,6 +84,13 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
 .olg ul{margin:0;padding-left:5mm}.olg li{line-height:1.45}
 .sendlg{position:fixed;inset:0;background:#12263A99;z-index:90;display:none;align-items:center;justify-content:center;padding:16px}
 .sdbox{background:#fff;border-radius:14px;padding:18px 20px;max-width:560px;width:100%;box-shadow:0 20px 60px #0005}.sdbox ol{padding-left:18px;margin:12px 0}.sdbox li{margin-bottom:12px}.sdbox label{margin:8px 0}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:0 18px}.fgrid p{margin:0 0 8px}
+.dxtags{display:flex;flex-wrap:wrap;gap:6px}.dxtags span{background:var(--soft);border-radius:8px;padding:4px 9px;font-size:13px}
+.mcharts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mchart{width:100%;height:auto;background:#fafcfc;border:1px solid var(--line);border-radius:10px}
+.tl{border-left:3px solid var(--mint);margin-left:56px;padding-left:0}.tli{display:flex;gap:12px;margin:0 0 14px -59px}.tld{width:62px;flex-shrink:0;text-align:right;font-size:12px;font-weight:700;color:var(--grey);padding-top:10px}
+.tlb{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;position:relative;font-size:14px}.tlb>div{margin-top:4px}
+.tli.at .tlb{border-left:4px solid var(--teal)}.tli.doc .tlb{border-left:4px solid var(--pale);background:#fbfdfd}
+.prevat{background:#E8F1F1;border:1px solid var(--mint);border-radius:12px;padding:10px 14px;margin-top:12px;font-size:14px}
 .pvh{color:#fff;font-weight:700;font-size:13px;letter-spacing:.04em;margin:4px auto 8px;max-width:1123px}
 @media (max-width:900px){.grid.g6{grid-template-columns:repeat(2,minmax(0,1fr))}.chks{grid-template-columns:repeat(2,minmax(0,1fr))}.app{flex-direction:column}
   nav{width:auto;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding:8px 10px;gap:4px;position:sticky;top:0;z-index:40;-webkit-overflow-scrolling:touch}
@@ -91,7 +98,8 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:16px 14px 80px}h1{font-size:22px}
   .card{padding:16px 14px}.modal .box{margin:0;border-radius:0;min-height:100vh;padding:12px}.preview{padding:8px}
   table.t{font-size:13px}.row .btn{flex:1 1 auto}}
-@media (max-width:560px){.grid,.grid.g6{grid-template-columns:minmax(0,1fr)}.span2,.span3,.span4,.span5,.span6{grid-column:1/-1}.chks{grid-template-columns:minmax(0,1fr)}
+@media (max-width:900px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.mcharts{grid-template-columns:minmax(0,1fr)}.tl{margin-left:0;border-left:0}.tli{margin-left:0;flex-direction:column;gap:2px}.tld{width:auto;text-align:left;padding-top:0}.grid,.grid.g6{grid-template-columns:minmax(0,1fr)}.span2,.span3,.span4,.span5,.span6{grid-column:1/-1}.chks{grid-template-columns:minmax(0,1fr)}
   #meds thead{display:none}#meds tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}#meds td{border:0;padding:0}#meds td.n{display:none}
   #meds td:nth-child(2){grid-column:1/-1}
   #fa > .row[style*="sticky"]{position:static!important;border-top:0}}
@@ -3256,8 +3264,9 @@ V.pacientes = () => {
   const draw = () => {
     const q = $("#q").value.toLowerCase();
     const L = P.filter((p) => !q || (p.nombre + p.cedula).toLowerCase().includes(q));
-    $("#res").innerHTML = L.length ? `<table class="t"><thead><tr><th>Paciente</th><th>Cédula</th><th>Edad</th><th>Teléfono</th><th>Documentos</th><th></th></tr></thead><tbody>${L.map((p) => { const n = DB.docs.filter((d) => d.patient.cedula === p.cedula).length; return `<tr><td><b>${esc(p.nombre)}</b></td><td style="white-space:nowrap">${fmtCed(p.cedula)}</td><td>${p.nac ? edad(p.nac) + " años" : esc(p.edad || "")}</td><td>${esc(p.tel || "")}</td><td>${n}</td><td class="row"><button class="btn s sm" data-r="${p.cedula}">Receta</button><button class="btn s sm" data-h="${p.cedula}">Historial</button><button class="btn d sm" data-x="${p.cedula}">Borrar</button></td></tr>`; }).join("")}</tbody></table>` : `<p class="hint">Sin pacientes${q ? " con esa búsqueda" : " todavía"}.</p>`;
+    $("#res").innerHTML = L.length ? `<table class="t"><thead><tr><th>Paciente</th><th>Cédula</th><th>Edad</th><th>Teléfono</th><th>Documentos</th><th></th></tr></thead><tbody>${L.map((p) => { const n = DB.docs.filter((d) => d.patient.cedula === p.cedula).length; return `<tr><td><b>${esc(p.nombre)}</b></td><td style="white-space:nowrap">${fmtCed(p.cedula)}</td><td>${p.nac ? edad(p.nac) + " años" : esc(p.edad || "")}</td><td>${esc(p.tel || "")}</td><td>${n}</td><td class="row"><button class="btn p sm" data-fi="${p.cedula}">Ficha clínica</button><button class="btn s sm" data-r="${p.cedula}">Receta</button><button class="btn s sm" data-h="${p.cedula}">Folios</button><button class="btn d sm" data-x="${p.cedula}">Borrar</button></td></tr>`; }).join("")}</tbody></table>` : `<p class="hint">Sin pacientes${q ? " con esa búsqueda" : " todavía"}.</p>`;
     $$("[data-r]", $("#res")).forEach((b) => (b.onclick = () => { go("receta"); const f = $("#f"); f.cedula.value = b.dataset.r; f.cedula.dispatchEvent(new Event("change")); }));
+    $$("[data-fi]", $("#res")).forEach((b) => (b.onclick = () => { V.ficha(b.dataset.fi); window.scrollTo(0, 0); }));
     $$("[data-h]", $("#res")).forEach((b) => (b.onclick = () => { go("registro"); $("#q").value = b.dataset.h; $("#q").dispatchEvent(new Event("input")); }));
     $$("[data-x]", $("#res")).forEach((b) => (b.onclick = () => { if (confirm("¿Borrar los datos de este paciente? Sus documentos emitidos se conservan en el registro.")) { delete DB.patients[b.dataset.x]; save(); V.pacientes(); } }));
   };
@@ -3480,6 +3489,82 @@ $("#doprint").onclick = () => {
   $("#print").innerHTML = renderDoc(CUR, $("#sigmode").value);
   const old = document.title; document.title = `${CUR.folio}_${CUR.patient.nombre.replace(/\s+/g, "_")}`;
   setTimeout(() => { window.print(); document.title = old; }, 150);
+};
+
+/* ---------- Ficha clínica del paciente: todo su historial en una pantalla ---------- */
+function historial(ced) {
+  const A = (DB.atenciones || []).filter((a) => a.patient && a.patient.cedula === ced).sort((a, b) => (a.fecha + (a.hora || "") < b.fecha + (b.hora || "") ? 1 : -1));
+  const D = (DB.docs || []).filter((d) => d.patient && d.patient.cedula === ced);
+  return { A, D };
+}
+function miniChart(title, unit, series, dates) {
+  // series: [{name, color, vals:[num|null]}] alineadas con dates (ascendente)
+  const W = 320, H = 150, ml = 34, mr = 10, mt = 22, mb = 26, pw = W - ml - mr, ph = H - mt - mb;
+  const all = series.flatMap((s) => s.vals).filter((v) => v != null);
+  if (!all.length) return "";
+  let lo = Math.min(...all), hi = Math.max(...all); if (lo === hi) { lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.15; lo -= pad; hi += pad;
+  const n = dates.length, X = (i) => ml + (n === 1 ? pw / 2 : (i / (n - 1)) * pw), Y = (v) => mt + ph - ((v - lo) / (hi - lo)) * ph;
+  let g = `<text x="${ml}" y="14" font-size="12" font-weight="700" fill="#12263A">${esc(title)} <tspan font-weight="400" fill="#4A5B6B">${esc(unit)}</tspan></text>`;
+  [lo, (lo + hi) / 2, hi].forEach((v) => { g += `<line x1="${ml}" x2="${ml + pw}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="#E2EAEC"/><text x="${ml - 4}" y="${(Y(v) + 3).toFixed(1)}" font-size="9" text-anchor="end" fill="#4A5B6B">${Math.round(v * 10) / 10}</text>`; });
+  const step = Math.max(1, Math.ceil(n / 5));
+  dates.forEach((d, i) => { if (i % step === 0 || i === n - 1) g += `<text x="${X(i).toFixed(1)}" y="${H - 8}" font-size="9" text-anchor="${n > 1 && i === n - 1 ? "end" : n > 1 && i === 0 ? "start" : "middle"}" fill="#4A5B6B">${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(2, 4)}</text>`; });
+  series.forEach((s) => {
+    const pts = s.vals.map((v, i) => (v == null ? null : [X(i), Y(v), v])).filter(Boolean);
+    if (pts.length > 1) g += `<polyline fill="none" stroke="${s.color}" stroke-width="2" points="${pts.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ")}"/>`;
+    pts.forEach((p) => { g += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="${s.color}"><title>${s.name}: ${p[2]}</title></circle>`; });
+    const last = pts[pts.length - 1]; if (last) g += `<text x="${Math.min(last[0] + 5, W - 4)}" y="${(last[1] - 6).toFixed(1)}" font-size="10" font-weight="700" fill="${s.color}" text-anchor="${last[0] > W - 40 ? "end" : "start"}">${last[2]}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" class="mchart" role="img" aria-label="${esc(title)}">${g}</svg>`;
+}
+V.ficha = (ced) => {
+  const p = DB.patients[ced]; if (!p) return go("pacientes");
+  const { A, D } = historial(ced), s = p.ap1 ? p : Object.assign({}, p, splitName(p.nombre));
+  const asc = A.slice().reverse().filter((a) => a.vit && Object.values(a.vit).some((v) => v));
+  const dates = asc.map((a) => a.fecha), num = (v) => { const f = parseFloat(String(v ?? "").replace(",", ".")); return isNaN(f) ? null : f; };
+  const pa = asc.map((a) => String(a.vit.pa || "").split("/").map(num));
+  const charts = [
+    miniChart("Presión arterial", "mmHg", [{ name: "Sistólica", color: "#C0392B", vals: pa.map((x) => x[0] ?? null) }, { name: "Diastólica", color: "#0B7A72", vals: pa.map((x) => x[1] ?? null) }], dates),
+    miniChart("Peso", "kg", [{ name: "Peso", color: "#12263A", vals: asc.map((a) => num(a.vit.peso)) }], dates),
+    miniChart("IMC", "kg/m²", [{ name: "IMC", color: "#7B4FB5", vals: asc.map((a) => num(a.vit.imc)) }], dates),
+    miniChart("Glucosa capilar", "mg/dl", [{ name: "Glucosa", color: "#D9822B", vals: asc.map((a) => num(a.vit.glu)) }], dates),
+    miniChart("Pulso", "lpm", [{ name: "Pulso", color: "#2E86C1", vals: asc.map((a) => num(a.vit.fc)) }], dates),
+    miniChart("Saturación", "%", [{ name: "SatO₂", color: "#16A085", vals: asc.map((a) => num(a.vit.sat)) }], dates),
+  ].filter(Boolean);
+  // diagnósticos frecuentes
+  const dxc = {}; A.forEach((a) => (a.dx || []).forEach((d) => { const k = (d.cie ? d.cie + " · " : "") + d.d; dxc[k] = (dxc[k] || 0) + 1; }));
+  const dxs = Object.entries(dxc).sort((a, b) => b[1] - a[1]);
+  // línea de tiempo: atenciones y documentos
+  const items = A.map((a) => ({ f: a.fecha + " " + (a.hora || ""), t: "AT", a })).concat(D.map((d) => ({ f: d.date + " 99", t: "DOC", d }))).sort((x, y) => (x.f < y.f ? 1 : -1));
+  const vit = (v) => [["PA", v.pa, ""], ["FC", v.fc, ""], ["T", v.t, " °C"], ["SatO₂", v.sat, "%"], ["Peso", v.peso, " kg"], ["IMC", v.imc, ""], ["Glucosa", v.glu, ""]].filter((x) => x[1]).map((x) => `${x[0]} <b>${esc(x[1])}${x[2]}</b>`).join(" · ");
+  const docName = (d) => (d.type === "CM" ? d.data.tipo : TYPES[d.type]);
+  const docDet = (d) => d.type === "RX" ? (d.data.meds || []).map((m) => `${m.dci}${m.conc ? " " + m.conc : ""}`).join(", ") : d.type === "OL" ? (d.data.ex || []).slice(0, 8).join(", ") + ((d.data.ex || []).length > 8 ? "…" : "") : d.data.dx || "";
+  $("#main").innerHTML = `<div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><h1>${esc(p.nombre)}</h1><p class="sub" style="margin-bottom:10px">C.I. ${fmtCed(p.cedula)} · ${p.nac ? edad(p.nac) + " años · " : ""}${esc(p.sexo || "")}${p.tel ? " · " + esc(p.tel) : ""}${p.email ? " · " + esc(p.email) : ""}</p></div>
+      <div class="row"><button class="btn p" id="fnew">Nueva atención</button><button class="btn s" data-q="receta">Receta</button><button class="btn s" data-q="lab">Orden de laboratorio</button><button class="btn s" data-q="general">Certificado</button></div></div>
+    <div class="fgrid">
+      <div class="card"><h2>Resumen</h2>
+        <p><b>${A.length}</b> atención(es) · <b>${D.filter((d) => d.status === "Emitida").length}</b> documento(s)${A[0] ? ` · última consulta <b>${fmt(A[0].fecha)}</b>` : ""}${A.length > 1 ? ` · primera <b>${fmt(A[A.length - 1].fecha)}</b>` : ""}</p>
+        <p><span class="hint">Alergias:</span> <b class="${p.alergias && !/niega|no refiere/i.test(p.alergias) ? "warnt" : ""}">${esc(p.alergias || "No registradas")}</b></p>
+        ${s.ocupacion || p.ocupacion ? `<p><span class="hint">Ocupación:</span> ${esc(p.ocupacion)}${p.empresa ? " · " + esc(p.empresa) : ""}</p>` : ""}
+        ${A[0] && A[0].antp ? `<p><span class="hint">Antecedentes personales:</span> ${esc(A[0].antp)}</p>` : ""}
+        ${A[0] && A[0].antf ? `<p><span class="hint">Antecedentes familiares:</span> ${esc(A[0].antf)}</p>` : ""}
+        ${dxs.length ? `<p class="hint" style="margin-bottom:4px">Diagnósticos registrados</p><div class="dxtags">${dxs.slice(0, 12).map(([k, n]) => `<span>${esc(k)}${n > 1 ? ` <b>×${n}</b>` : ""}</span>`).join("")}</div>` : ""}
+      </div>
+      <div class="card"><h2>Evolución de signos vitales</h2>${charts.length ? `<div class="mcharts">${charts.join("")}</div>${asc.length < 2 ? '<p class="hint">Con dos o más consultas se dibuja la tendencia.</p>' : ""}` : '<p class="hint">Aún no hay signos vitales registrados en las atenciones.</p>'}</div>
+    </div>
+    <div class="card"><h2>Historial</h2>${items.length ? `<div class="tl">${items.map((it) => it.t === "AT" ? `<div class="tli at"><div class="tld">${fmt(it.a.fecha)}${it.a.hora ? "<br><small>" + esc(it.a.hora) + "</small>" : ""}</div><div class="tlb">
+        <div class="row" style="justify-content:space-between"><b>Atención ${esc(it.a.tipo || "")} <span class="tag" style="font-weight:400">${it.a.id}</span></b><span class="row"><button class="btn s sm" data-o="${it.a.id}">Abrir</button><button class="btn s sm" data-p="${it.a.id}">Formularios</button></span></div>
+        ${it.a.motivo ? `<div><span class="hint">Motivo:</span> ${esc(it.a.motivo)}</div>` : ""}
+        ${(it.a.dx || []).length ? `<div><span class="hint">Dx:</span> ${it.a.dx.map((d) => `${esc(d.d)}${d.cie ? ` <span class="tag">${esc(d.cie)}</span>` : ""}${d.t ? ` <small>${d.t}</small>` : ""}`).join("; ")}</div>` : ""}
+        ${it.a.vit && vit(it.a.vit) ? `<div class="hint">${vit(it.a.vit)}</div>` : ""}
+        ${it.a.plan ? `<details><summary class="hint">Plan</summary><div style="white-space:pre-wrap">${esc(it.a.plan)}</div></details>` : ""}
+      </div></div>` : `<div class="tli doc"><div class="tld">${fmt(it.d.date)}</div><div class="tlb"><div class="row" style="justify-content:space-between"><b>${esc(docName(it.d))} <span class="tag" style="font-weight:400">${it.d.folio}</span>${it.d.status === "Anulada" ? ' <span class="pill no">Anulada</span>' : ""}</b><button class="btn s sm" data-v="${it.d.folio}">Ver / imprimir</button></div>${docDet(it.d) ? `<div class="hint">${esc(docDet(it.d))}</div>` : ""}</div></div>`).join("")}</div>` : '<p class="hint">Todavía no hay atenciones ni documentos para este paciente.</p>'}</div>`;
+  $$("[data-o]").forEach((b) => (b.onclick = () => { go("atencion"); V.atencion(JSON.parse(JSON.stringify(DB.atenciones.find((a) => a.id === b.dataset.o)))); window.scrollTo(0, 0); }));
+  $$("[data-p]").forEach((b) => (b.onclick = () => { const a = DB.atenciones.find((x) => x.id === b.dataset.p); openForms(AT_DOCS.filter((c) => a.docs[c]), a); }));
+  $$("[data-v]", $("#main")).forEach((b) => (b.onclick = () => openDoc(DB.docs.find((d) => d.folio === b.dataset.v))));
+  $("#fnew").onclick = () => { go("atencion"); const f = $("#fa"); f.cedula.value = ced; f.cedula.dispatchEvent(new Event("change")); };
+  $$("[data-q]").forEach((b) => (b.onclick = () => { go(b.dataset.q); const f = $("#f"); if (f && f.cedula) { f.cedula.value = ced; f.cedula.dispatchEvent(new Event("change")); } }));
 };
 
 /* ---------- envío de documentos por WhatsApp o correo ---------- */
@@ -4060,7 +4145,7 @@ V.atencion = (at) => {
     <label class="span3">Domicilio<input name="domicilio" value="${v("domicilio", P)}"></label>
     <label>N.º historia clínica<input name="hcu" value="${v("hcu", P)}" placeholder="La cédula"></label><label>N.º archivo<input name="archivo" value="${v("archivo", P)}" placeholder="La cédula"></label>
     <label class="span4">Alergias<input name="alergias" value="${v("alergias", P)}" placeholder="Niega, o detalla"></label>
-  </div><datalist id="pl">${opts}</datalist></div>
+  </div><div id="prevat"></div><datalist id="pl">${opts}</datalist></div>
 
   <div class="card"><h2>Consulta</h2><div class="grid g6">
     <label>Fecha<input type="date" name="fecha" value="${v("fecha")}"></label><label>Hora<input type="time" name="hora" value="${v("hora") || new Date().toTimeString().slice(0, 5)}"></label>
@@ -4170,7 +4255,26 @@ V.atencion = (at) => {
       const sp = p.ap1 ? p : Object.assign({}, p, splitName(p.nombre));
       ["ap1", "ap2", "n1", "n2", "nac", "sexo", "tel", "email", "ocupacion", "empresa", "domicilio", "prov", "canton", "parroq", "alergias", "hcu", "archivo"].forEach((k) => { if (f[k] && sp[k] != null && sp[k] !== "") f[k].value = sp[k]; });
       f.nac.dispatchEvent(new Event("change")); msg.textContent = "Paciente encontrado: datos cargados."; msg.className = "hint";
+      prevVisit(c);
     } else if (c.length === 10) { msg.textContent = cedulaOk(c) ? "Cédula válida. Paciente nuevo." : "Revisa la cédula: el dígito verificador no coincide."; msg.className = cedulaOk(c) ? "hint" : "hint warnt"; }
+  };
+  // consulta subsecuente: copiar antecedentes y mostrar la última atención
+  const prevVisit = (c) => {
+    const box = $("#prevat"); if (f._prevFor === c) return; f._prevFor = c;
+    const prev = (DB.atenciones || []).filter((a) => a.patient && a.patient.cedula === c && a.id !== A.id).sort((a, b) => (a.fecha + (a.hora || "") < b.fecha + (b.hora || "") ? 1 : -1));
+    if (!prev.length) { box.innerHTML = ""; return; }
+    const L = prev[0];
+    if (!A.id) {
+      f.tipo.value = "Subsecuente";
+      if (!f.antp.value && L.antp) f.antp.value = L.antp; if (!f.antf.value && L.antf) f.antf.value = L.antf;
+      ["antp", "antf"].forEach((g) => Object.keys((L.checks && L.checks[g]) || {}).forEach((k) => { const i = $(`[data-g="${g}"][value="${k}"]`, f); if (i) i.checked = true; }));
+    }
+    box.innerHTML = `<div class="prevat"><b>Paciente con ${prev.length} atención(es) anterior(es).</b> Última: <b>${fmt(L.fecha)}</b>${L.motivo ? " · " + esc(L.motivo) : ""}<br>
+      ${(L.dx || []).length ? `<span class="hint">Dx:</span> ${L.dx.map((d) => esc(d.d) + (d.cie ? " (" + esc(d.cie) + ")" : "")).join("; ")}<br>` : ""}
+      ${L.vit && L.vit.pa ? `<span class="hint">PA ${esc(L.vit.pa)}${L.vit.peso ? " · Peso " + esc(L.vit.peso) + " kg" : ""}${L.vit.glu ? " · Glucosa " + esc(L.vit.glu) : ""}</span><br>` : ""}
+      ${L.plan ? `<span class="hint">Plan:</span> ${esc(L.plan.length > 220 ? L.plan.slice(0, 220) + "…" : L.plan)}<br>` : ""}
+      ${!A.id ? '<span class="hint">Se marcó como consulta subsecuente y se copiaron los antecedentes; revísalos.</span> ' : ""}<button type="button" class="btn s sm" id="verficha">Ver ficha clínica completa</button></div>`;
+    $("#verficha").onclick = () => { V.ficha(c); window.scrollTo(0, 0); };
   };
   ced.addEventListener("change", fillP); ced.addEventListener("input", () => { if (ced.value.replace(/\D/g, "").length === 10) fillP(); });
   f.nac.addEventListener("change", () => { const e = edad(f.nac.value, f.fecha.value); if (e !== "") f.edad.value = e + " años"; });
