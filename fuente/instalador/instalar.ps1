@@ -8,7 +8,7 @@ Write-Host "  SIGNO CONSULTORIO - instalación" -ForegroundColor Cyan
 Write-Host "  Carpeta del programa: $dest"
 Write-Host ""
 New-Item -ItemType Directory -Force -Path $dest, (Join-Path $dest "Respaldos"), (Join-Path $dest "PDF firmados") | Out-Null
-Copy-Item -Force (Join-Path $src "Signo Consultorio.html") (Join-Path $dest "Signo Consultorio.html")
+if (Test-Path (Join-Path $src "Signo Consultorio.html")) { Copy-Item -Force (Join-Path $src "Signo Consultorio.html") (Join-Path $dest "Signo Consultorio (copia sin internet).html") }
 Copy-Item -Force (Join-Path $src "signo.ico") (Join-Path $dest "signo.ico")
 
 $chrome = @("$env:ProgramFiles\Google\Chrome\Application\chrome.exe", "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe", "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
@@ -23,7 +23,7 @@ if ($chrome -and $edge) {
   Write-Host "  No encontré Chrome ni Edge. Instala uno de los dos y vuelve a ejecutar este instalador." -ForegroundColor Red
   Read-Host "  Presiona Enter para salir"; exit 1
 }
-$url = ([Uri](Join-Path $dest "Signo Consultorio.html")).AbsoluteUri
+$url = "https://signoy.github.io/SIGNO/"
 $ws = New-Object -ComObject WScript.Shell
 $places = @([Environment]::GetFolderPath("Desktop"), [Environment]::GetFolderPath("Programs"))
 foreach ($p in $places) {
@@ -37,7 +37,8 @@ foreach ($p in $places) {
 }
 Write-Host ""
 Write-Host "  Listo. Quedó el icono 'Signo Consultorio' en el escritorio y en el menú Inicio." -ForegroundColor Green
-Write-Host "  Se abre en su propia ventana, como una aplicación."
+Write-Host "  Se abre en su propia ventana y se actualiza sola cada vez que hay una versión nueva."
+Write-Host "  Primera vez: Ajustes y respaldo > Restaurar respaldo, para traer tus pacientes."
 Write-Host "  Para fijarlo en la barra de tareas: ábrelo, clic derecho en su icono de la barra > Anclar."
 Write-Host ""
 Start-Process $browser "--app=""$url"""
