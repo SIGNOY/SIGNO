@@ -26,6 +26,10 @@ CLEAR = {
                          "H23 W23 AO23 BC23 BK23 BY23 E25 O25 AP30 AU30 AP31 AU31 AP32 AU32 AP33 AU33 AP34 AU34 AP35 AU35 AP36 AU36 "
                          "BU30 BY30 BU31 BY31 BU32 BY32 BU33 BY33 BU34 BY34 BU35 BY35 BU36 BY36 L44 AC44 AY44 BQ44"},
 }
+# celdas combinadas por error en la plantilla oficial (se separan para poder llenarlas)
+UNMERGE = {"FEMO": {1: ["M5:N5"]}}
+# columnas ocultas donde empieza una celda con contenido (la fecha de actividades extralaborales)
+UNHIDE = {"FEMO": {2: ["BA"]}}
 SKIP = {"028A1", "028B1", "028B2", "028C1", "028C2"}  # curvas: se generan aparte como imagen
 
 INDEXED = ["000000","FFFFFF","FF0000","00FF00","0000FF","FFFF00","FF00FF","00FFFF",
@@ -239,6 +243,13 @@ for path in sorted(glob.glob(os.path.join(SRC, "*.xlsx"))):
     wb = openpyxl.load_workbook(path, data_only=True)
     wbf = openpyxl.load_workbook(path)
     want = SHEETS.get(code)
+    for si, rngs in UNMERGE.get(code, {}).items():
+        for rg in rngs:
+            for w in (wb, wbf):
+                if rg in [str(m) for m in w.worksheets[si].merged_cells.ranges]: w.worksheets[si].unmerge_cells(rg)
+    for si, cols_ in UNHIDE.get(code, {}).items():
+        for w in (wb, wbf):
+            for cl in cols_: w.worksheets[si].column_dimensions[cl].hidden = False
     sheets = []
     for ws in wb.worksheets:
         if ws.sheet_state != "visible": continue

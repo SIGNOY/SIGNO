@@ -413,6 +413,7 @@ function mspMap(code, at) {
     chk("lab");
   }
   if (code === "EPI1") Object.assign(o, mapEPI1(at));
+  if ((code === "FEMO" || code === "CEMO") && at.kind === "ocup") return ocMap(code, at);
   if (code === "012A") {
     const d = at.d012 || {};
     o["0:" + (serv === "Emergencia" ? "F10" : serv === "Hospitalización" ? "X10" : "O10")] = X;
@@ -436,16 +437,19 @@ function openForms(codes, at, opts) {
   const ctx = mspCtx(at && at.patient ? at : null);
   PVPAGES = [];
   codes.forEach((code) => {
-    const head = document.createElement("div"); head.className = "pvh"; head.textContent = `SNS-MSP/HCU-form.${code} · ${FORMS[code] || ""}`; pv.appendChild(head);
+    const head = document.createElement("div"); head.className = "pvh"; head.textContent = `${OC_HEAD[code] || "SNS-MSP/HCU-form." + code} · ${FORMS[code] || ""}`; pv.appendChild(head);
     if (code === "CURVAS") { const gp = growthPanel(at); pv.appendChild(gp); pv.appendChild(gp._host); gp._draw(); PVPAGES.push({ code, pages: [], growth: gp }); return; }
     if (code === "AN7") { const pg = actaPage(at); pv.appendChild(pg); PVPAGES.push({ code, pages: [], acta: pg }); return; }
+    if (code === "OCCONF" || code === "OCAUT") { const pgs = ocLegal(code, at && at.kind === "ocup" ? at : null, pv); PVPAGES.push({ code, pages: [], acta: pgs }); return; }
     const pages = MSP.render(code, { edit: true, sheets: code === "007" && at && at.dx ? [0] : undefined });
     let panel = null;
     if (code === "020") { panel = curvePanel(at); pv.appendChild(panel); }
     pages.forEach((p) => pv.appendChild(p)); MSP.layout(pages);
     if (panel) panel._pages = pages;
-    if (code !== "EPI1") MSP.smart(pages, ctx);
+    const oc = code === "FEMO" || code === "CEMO";
+    if (code !== "EPI1" && !(oc && at && at.kind === "ocup")) MSP.smart(pages, ctx);
     if (at && at.dx) MSP.fill(pages, mspMap(code, at));
+    if (oc && at && at.kind === "ocup") ocPost(code, pages, at);
     else if (at && at.patient && code === "EPI1") MSP.fill(pages, mapEPI1(Object.assign({ fecha: today() }, at)));
     const base = MSP.read(pages);
     const man = at && at.manual && at.manual[code]; if (man) MSP.fill(pages, man);
@@ -462,7 +466,7 @@ function captureManual() {
   at.manual = at.manual || {};
   PVPAGES.forEach(({ code, pages, base, panel, acta, growth }) => {
     if (growth) return;
-    if (acta) { at.manual[code] = Object.fromEntries($$("[data-k]", acta).map((e) => [e.dataset.k, e.innerText.trim()])); return; }
+    if (acta) { at.manual[code] = Object.fromEntries([].concat(acta).flatMap((a) => $$("[data-k]", a)).map((e) => [e.dataset.k, e.innerText.trim()])); return; }
     if (panel) at.curva = panel._read();
     const cv = new Set(); pages.forEach((p) => p.querySelectorAll("td[data-cv]").forEach((td) => cv.add(p._si + ":" + td.getAttribute("data-a"))));
     const cur = MSP.read(pages), d = {};
@@ -471,7 +475,8 @@ function captureManual() {
     Object.keys(base).forEach((k) => { if (!(k in cur)) d[k] = ""; });
     at.manual[code] = d;
   });
-  const i = DB.atenciones.findIndex((x) => x.id === at.id); if (i >= 0) DB.atenciones[i] = at; save();
+  const L = at.kind === "ocup" ? (DB.ocup || []) : DB.atenciones;
+  const i = L.findIndex((x) => x.id === at.id); if (i >= 0) L[i] = at; save();
 }
 
 V.formularios = () => {

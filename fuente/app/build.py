@@ -8,6 +8,7 @@ t = t.replace("__LABJS__", open(os.path.join(d, "lab.js"), encoding="utf-8").rea
 t = t.replace("__XLSXJS__", open(os.path.join(d, "xlsx.js"), encoding="utf-8").read())
 t = t.replace("__SIVEJS__", open(os.path.join(d, "sive.js"), encoding="utf-8").read().replace("__SIVEEV__", open(os.path.join(d, "sive_eventos.json"), encoding="utf-8").read()).replace("__CIE10__", safe(json.dumps(open(os.path.join(d, "cie10.txt"), encoding="utf-8").read(), ensure_ascii=False))))
 t = t.replace("__GROWTHJS__", open(os.path.join(d, "growth.js"), encoding="utf-8").read().replace("__GROWTH__", open(os.path.join(d, "../who/growth.json")).read()))
+t = t.replace("__OCUJS__", open(os.path.join(d, "ocupacional.js"), encoding="utf-8").read())
 t = t.replace("__ATENCION__", open(os.path.join(d, "atencion.js"), encoding="utf-8").read())
 uri = lambda f: (lambda b: b if b.startswith("data:") else "data:image/png;base64," + b)(open(os.path.join(d, f)).read().strip())
 t = t.replace("__LOGO__", uri("logo.b64"))

@@ -11,7 +11,7 @@ function sendInfo() {
   let p, folio, tipo, fecha, extra = "", em = "emitido";
   if (PVMODE === "msp") {
     const at = PVPAGES && (PVPAGES.at || PVPAGES._at); p = at && at.patient; if (!p) return null;
-    folio = at.id || ""; fecha = at.fecha || today(); tipo = "sus formularios de atención médica"; em = "emitidos";
+    folio = at.id || ""; fecha = at.fecha || today(); tipo = at.kind === "ocup" ? "su certificado de evaluación médica ocupacional" : "sus formularios de atención médica"; em = at.kind === "ocup" ? "emitido" : "emitidos";
   } else {
     if (!CUR) return null; p = CUR.patient; folio = CUR.folio; fecha = CUR.date;
     const t = CUR.type;

@@ -42,7 +42,8 @@ V.ficha = (ced) => {
   const dxc = {}; A.forEach((a) => (a.dx || []).forEach((d) => { const k = (d.cie ? d.cie + " · " : "") + d.d; dxc[k] = (dxc[k] || 0) + 1; }));
   const dxs = Object.entries(dxc).sort((a, b) => b[1] - a[1]);
   // línea de tiempo: atenciones y documentos
-  const items = A.map((a) => ({ f: a.fecha + " " + (a.hora || ""), t: "AT", a })).concat(D.map((d) => ({ f: d.date + " 99", t: "DOC", d }))).sort((x, y) => (x.f < y.f ? 1 : -1));
+  const O = (DB.ocup || []).filter((x) => x.patient && x.patient.cedula === ced);
+  const items = A.map((a) => ({ f: a.fecha + " " + (a.hora || ""), t: "AT", a })).concat(D.map((d) => ({ f: d.date + " 99", t: "DOC", d })), O.map((o) => ({ f: o.fecha + " 98", t: "OC", o }))).sort((x, y) => (x.f < y.f ? 1 : -1));
   const vit = (v) => [["PA", v.pa, ""], ["FC", v.fc, ""], ["T", v.t, " °C"], ["SatO₂", v.sat, "%"], ["Peso", v.peso, " kg"], ["IMC", v.imc, ""], ["Glucosa", v.glu, ""]].filter((x) => x[1]).map((x) => `${x[0]} <b>${esc(x[1])}${x[2]}</b>`).join(" · ");
   const docName = (d) => (d.type === "CM" ? d.data.tipo : TYPES[d.type]);
   const docDet = (d) => d.type === "RX" ? (d.data.meds || []).map((m) => `${m.dci}${m.conc ? " " + m.conc : ""}`).join(", ") : d.type === "OL" ? (d.data.ex || []).slice(0, 8).join(", ") + ((d.data.ex || []).length > 8 ? "…" : "") : d.data.dx || "";
@@ -60,7 +61,7 @@ V.ficha = (ced) => {
       </div>
       <div class="card"><h2>Evolución de signos vitales</h2>${charts.length ? `<div class="mcharts">${charts.join("")}</div>${asc.length < 2 ? '<p class="hint">Con dos o más consultas se dibuja la tendencia.</p>' : ""}` : '<p class="hint">Aún no hay signos vitales registrados en las atenciones.</p>'}</div>
     </div>
-    <div class="card"><h2>Historial</h2>${items.length ? `<div class="tl">${items.map((it) => it.t === "AT" ? `<div class="tli at"><div class="tld">${fmt(it.a.fecha)}${it.a.hora ? "<br><small>" + esc(it.a.hora) + "</small>" : ""}</div><div class="tlb">
+    <div class="card"><h2>Historial</h2>${items.length ? `<div class="tl">${items.map((it) => it.t === "OC" ? `<div class="tli doc"><div class="tld">${fmt(it.o.fecha)}</div><div class="tlb"><div class="row" style="justify-content:space-between"><b>Evaluación ocupacional · ${esc(OC_TIPO_TXT[it.o.tipo] || "")} <span class="tag" style="font-weight:400">${it.o.id}</span></b><span class="row"><button class="btn s sm" data-oo="${it.o.id}">Abrir</button><button class="btn s sm" data-od="${it.o.id}">Documentos</button></span></div><div class="hint">${esc(it.o.emp.nombre || "")}${it.o.puesto ? " · " + esc(it.o.puesto) : ""}${it.o.apt ? " · <b>" + esc(it.o.apt) + "</b>" : ""}</div></div></div>` : it.t === "AT" ? `<div class="tli at"><div class="tld">${fmt(it.a.fecha)}${it.a.hora ? "<br><small>" + esc(it.a.hora) + "</small>" : ""}</div><div class="tlb">
         <div class="row" style="justify-content:space-between"><b>Atención ${esc(it.a.tipo || "")} <span class="tag" style="font-weight:400">${it.a.id}</span></b><span class="row"><button class="btn s sm" data-o="${it.a.id}">Abrir</button><button class="btn s sm" data-p="${it.a.id}">Formularios</button></span></div>
         ${it.a.motivo ? `<div><span class="hint">Motivo:</span> ${esc(it.a.motivo)}</div>` : ""}
         ${(it.a.dx || []).length ? `<div><span class="hint">Dx:</span> ${it.a.dx.map((d) => `${esc(d.d)}${d.cie ? ` <span class="tag">${esc(d.cie)}</span>` : ""}${d.t ? ` <small>${d.t}</small>` : ""}`).join("; ")}</div>` : ""}
@@ -70,6 +71,8 @@ V.ficha = (ced) => {
   $$("[data-o]").forEach((b) => (b.onclick = () => { go("atencion"); V.atencion(JSON.parse(JSON.stringify(DB.atenciones.find((a) => a.id === b.dataset.o)))); window.scrollTo(0, 0); }));
   $$("[data-p]").forEach((b) => (b.onclick = () => { const a = DB.atenciones.find((x) => x.id === b.dataset.p); openForms(AT_DOCS.filter((c) => a.docs[c]), a); }));
   $$("[data-v]", $("#main")).forEach((b) => (b.onclick = () => openDoc(DB.docs.find((d) => d.folio === b.dataset.v))));
+  $$("[data-oo]").forEach((b) => (b.onclick = () => { go("ocupacional"); V.ocupacional(JSON.parse(JSON.stringify(DB.ocup.find((x) => x.id === b.dataset.oo)))); window.scrollTo(0, 0); }));
+  $$("[data-od]").forEach((b) => (b.onclick = () => { const x = DB.ocup.find((y) => y.id === b.dataset.od); openForms(ocCodes(x), x); }));
   $("#fnew").onclick = () => { go("atencion"); const f = $("#fa"); f.cedula.value = ced; f.cedula.dispatchEvent(new Event("change")); };
   $$("[data-q]").forEach((b) => (b.onclick = () => { go(b.dataset.q); const f = $("#f"); if (f && f.cedula) { f.cedula.value = ced; f.cedula.dispatchEvent(new Event("change")); } }));
 };
