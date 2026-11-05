@@ -131,7 +131,7 @@ function ocProf() {
 function ocRich(pages, si, addr, html) {
   for (const p of pages) {
     if (p._si !== si) continue; const td = p.querySelector('td[data-a="' + addr + '"]'); if (!td) continue;
-    const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "left"; d.style.lineHeight = "1.12"; d.innerHTML = html;
+    const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "center"; d.style.lineHeight = "1.12"; d.innerHTML = html;
     let fs = (p._fs || 8) * 0.9; d.style.fontSize = fs + "pt";
     while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
     d.removeAttribute("contenteditable"); return;
@@ -268,7 +268,7 @@ function ocLegal(code, ev, pv) {
       `<p>${EL(1)} vinculado con el Centro de Trabajo acuerda y se compromete a mantener bajo confidencialidad la información generada y conocida en virtud de la función que desempeñe en el Centro de Trabajo mientras dure su relación laboral y después de la misma en estricto respeto a la normativa legal vigente, en razón de la sensibilidad de la información y las competencias.</p>`,
       `<p class="h">CLÁUSULA OCTAVA. - ACEPTACIÓN DE LAS PARTES:</p>`,
       `<p>${EL(1)} acepta el contenido de todas y cada una de las cláusulas del presente Acuerdo y en consecuencia se compromete a cumplirlas en toda su extensión, en fe y garantía de lo cual, y para los fines legales correspondientes, suscribe en la ciudad de ${F("ciu", ciu, 30)} al ${F("dia", String(+dd), 8)} de ${F("mes", MESES[+mm - 1], 22)} de ${F("anio", yy, 12)}.</p>`,
-      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}${!cf.ci || cf.ci === s.ci ? `<br>${F("tt1", ocProf().l1, 60)}${ocProf().l2 ? `<br>${F("tt2", ocProf().l2, 60)}` : ""}` : ""}</p></div>`,
+      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocsg2"><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}${!cf.ci || cf.ci === s.ci ? `<br>${F("tt1", ocProf().l1, 60)}${ocProf().l2 ? `<br>${F("tt2", ocProf().l2, 60)}` : ""}` : ""}</p></div></div>`,
     ];
   } else {
     title = "AUTORIZACION DEL TRATAMIENTO DE LA INFORMACION EN SALUD OCUPACIONAL Y DE LA PRACTICA MEDICA ASISTENCIAL OCUPACIONAL";

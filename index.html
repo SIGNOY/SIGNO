@@ -66,7 +66,7 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
 .ocd .octt{text-align:center;font-weight:700;font-size:11.5pt;margin:2mm 6mm 5mm}
 .ocd .ocbd p{margin:0 0 2.2mm}.ocd .ocbd p.h{font-weight:700;margin-top:4mm}.ocd .ocbd p.q{margin-left:8mm;font-style:italic}
 .ocd .af{display:inline-block;border-bottom:1px dotted #555;min-width:20mm;padding:0 1mm;font-weight:700;text-align:left;outline:none}
-.ocd .ocsg{margin-top:5mm;text-align:left}.ocd .ocsg2{text-align:center}.ocd .ocln{width:80mm;border-top:1px solid #000;margin:12mm 0 1.5mm}.ocd .ocsg2 .ocln{margin:12mm auto 1.5mm}
+.ocd .ocsg{margin-top:5mm;text-align:left}.ocd .ocsg2{text-align:center}.ocd .ocsg2 .af{text-align:center}.ocd .ocln{width:80mm;border-top:1px solid #000;margin:12mm 0 1.5mm}.ocd .ocsg2 .ocln{margin:12mm auto 1.5mm}
 .ocd .ocft{position:absolute;left:20mm;right:20mm;bottom:7mm;display:flex;justify-content:space-between;font-size:8pt;color:#4A5B6B;font-family:Calibri,Arial,sans-serif}
 .msp .oct{font-weight:400;font-style:normal;color:#0b1f3a;font-size:var(--fs,8pt);text-decoration:none;text-transform:none}
 @media print{.ocd .af{border-bottom:0}}
@@ -4849,7 +4849,7 @@ function ocProf() {
 function ocRich(pages, si, addr, html) {
   for (const p of pages) {
     if (p._si !== si) continue; const td = p.querySelector('td[data-a="' + addr + '"]'); if (!td) continue;
-    const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "left"; d.style.lineHeight = "1.12"; d.innerHTML = html;
+    const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "center"; d.style.lineHeight = "1.12"; d.innerHTML = html;
     let fs = (p._fs || 8) * 0.9; d.style.fontSize = fs + "pt";
     while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
     d.removeAttribute("contenteditable"); return;
@@ -4986,7 +4986,7 @@ function ocLegal(code, ev, pv) {
       `<p>${EL(1)} vinculado con el Centro de Trabajo acuerda y se compromete a mantener bajo confidencialidad la información generada y conocida en virtud de la función que desempeñe en el Centro de Trabajo mientras dure su relación laboral y después de la misma en estricto respeto a la normativa legal vigente, en razón de la sensibilidad de la información y las competencias.</p>`,
       `<p class="h">CLÁUSULA OCTAVA. - ACEPTACIÓN DE LAS PARTES:</p>`,
       `<p>${EL(1)} acepta el contenido de todas y cada una de las cláusulas del presente Acuerdo y en consecuencia se compromete a cumplirlas en toda su extensión, en fe y garantía de lo cual, y para los fines legales correspondientes, suscribe en la ciudad de ${F("ciu", ciu, 30)} al ${F("dia", String(+dd), 8)} de ${F("mes", MESES[+mm - 1], 22)} de ${F("anio", yy, 12)}.</p>`,
-      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}${!cf.ci || cf.ci === s.ci ? `<br>${F("tt1", ocProf().l1, 60)}${ocProf().l2 ? `<br>${F("tt2", ocProf().l2, 60)}` : ""}` : ""}</p></div>`,
+      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocsg2"><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}${!cf.ci || cf.ci === s.ci ? `<br>${F("tt1", ocProf().l1, 60)}${ocProf().l2 ? `<br>${F("tt2", ocProf().l2, 60)}` : ""}` : ""}</p></div></div>`,
     ];
   } else {
     title = "AUTORIZACION DEL TRATAMIENTO DE LA INFORMACION EN SALUD OCUPACIONAL Y DE LA PRACTICA MEDICA ASISTENCIAL OCUPACIONAL";
