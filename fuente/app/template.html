@@ -158,6 +158,9 @@ table.d td b{color:#12263A}
   #print .page{box-shadow:none;margin:0;page-break-after:always;break-after:page}
   #print .page:last-child{page-break-after:auto;break-after:auto}
   #print .mspp{box-shadow:none;margin:0}
+  /* iPhone, iPad y Safari ponen sus propios márgenes y encabezado: la hoja se acorta para que quepa en una sola página */
+  #print.wk .page.a4p{height:270mm}
+  #print.wk .page.a4l{height:178mm}#print.wk .page.a4l .z{zoom:.93}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -170,7 +173,7 @@ table.d td b{color:#12263A}
     <button data-v="atencion" class="on">Atención (HCU MSP)</button>
     <button data-v="formularios">Formularios MSP</button>
     <button data-v="receta">Nueva receta</button>
-    <button data-v="lab">Orden de laboratorio</button>
+    <button data-v="lab">Orden de exámenes</button>
     <button data-v="mental">Certificado de salud mental</button>
     <button data-v="iess">Certificado IESS (reposo)</button>
     <button data-v="general">Otros certificados</button>
@@ -206,7 +209,7 @@ table.d td b{color:#12263A}
 "use strict";
 const LOGO = "__LOGO__", WM = "__WM__";
 const KEY = "signo_consultorio_v1";
-const TYPES = { RX: "Receta médica", SM: "Certificado de salud mental", IE: "Certificado IESS", CM: "Certificado médico", OL: "Orden de laboratorio" };
+const TYPES = { RX: "Receta médica", SM: "Certificado de salud mental", IE: "Certificado IESS", CM: "Certificado médico", OL: "Orden de exámenes" };
 const DEF = {
   settings: { nombre: "Dr. Yassir Josué Dumani Manzano", titulo: "Médico · Magíster en Prevención de Riesgos Laborales",
     ci: "0955259585", senescyt: "1006-2021-2377353", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
@@ -729,6 +732,7 @@ function fitPreview() {
 addEventListener("resize", () => { if ($("#modal").style.display === "block") fitPreview(); });
 /* versión web: funcionar sin internet e instalarse como aplicación */
 if (/^https?:/.test(location.protocol) && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+const WEBKIT_PRINT = (() => { const u = navigator.userAgent; return /iP(hone|ad|od)/.test(u) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) || (/Safari/.test(u) && !/Chrome|Chromium|CriOS|Edg|OPR|Firefox|Android/.test(u)); })();
 $("#sendwa").onclick = () => sendDialog("wa");
 $("#sendmail").onclick = () => sendDialog("mail");
 $("#doprint").onclick = () => {
@@ -745,6 +749,7 @@ $("#doprint").onclick = () => {
   if (!CUR) return;
   $("#pagecss").textContent = `@page{size:A4 ${CUR.type === "RX" ? "landscape" : "portrait"};margin:0}`;
   $("#print").innerHTML = renderDoc(CUR, $("#sigmode").value);
+  $("#print").classList.toggle("wk", WEBKIT_PRINT);
   const old = document.title; document.title = `${CUR.folio}_${CUR.patient.nombre.replace(/\s+/g, "_")}`;
   setTimeout(() => { window.print(); document.title = old; }, 150);
 };

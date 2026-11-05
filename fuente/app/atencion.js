@@ -241,7 +241,7 @@ V.atencion = (at) => {
     <button type="button" class="btn s" data-go="iess">Certificado IESS</button>
     <button type="button" class="btn s" data-go="general">Otro certificado</button>
     <button type="button" class="btn s" data-go="mental">Salud mental</button>
-    <button type="button" class="btn s" data-go="lab">Orden de laboratorio</button>
+    <button type="button" class="btn s" data-go="lab">Orden de exámenes</button>
   </div></form>
   <div class="card" style="margin-top:18px"><h2>Atenciones guardadas</h2><input id="aq" placeholder="Buscar por nombre o cédula" style="width:100%"><div id="atl" style="margin-top:10px"></div></div>`;
 

@@ -48,7 +48,7 @@ V.ficha = (ced) => {
   const docDet = (d) => d.type === "RX" ? (d.data.meds || []).map((m) => `${m.dci}${m.conc ? " " + m.conc : ""}`).join(", ") : d.type === "OL" ? (d.data.ex || []).slice(0, 8).join(", ") + ((d.data.ex || []).length > 8 ? "…" : "") : d.data.dx || "";
   $("#main").innerHTML = `<div class="row" style="justify-content:space-between;align-items:flex-start">
       <div><h1>${esc(p.nombre)}</h1><p class="sub" style="margin-bottom:10px">C.I. ${fmtCed(p.cedula)} · ${p.nac ? edad(p.nac) + " años · " : ""}${esc(p.sexo || "")}${p.tel ? " · " + esc(p.tel) : ""}${p.email ? " · " + esc(p.email) : ""}</p></div>
-      <div class="row"><button class="btn p" id="fnew">Nueva atención</button><button class="btn s" data-q="receta">Receta</button><button class="btn s" data-q="lab">Orden de laboratorio</button><button class="btn s" data-q="general">Certificado</button></div></div>
+      <div class="row"><button class="btn p" id="fnew">Nueva atención</button><button class="btn s" data-q="receta">Receta</button><button class="btn s" data-q="lab">Orden de exámenes</button><button class="btn s" data-q="general">Certificado</button></div></div>
     <div class="fgrid">
       <div class="card"><h2>Resumen</h2>
         <p><b>${A.length}</b> atención(es) · <b>${D.filter((d) => d.status === "Emitida").length}</b> documento(s)${A[0] ? ` · última consulta <b>${fmt(A[0].fecha)}</b>` : ""}${A.length > 1 ? ` · primera <b>${fmt(A[A.length - 1].fecha)}</b>` : ""}</p>

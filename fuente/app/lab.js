@@ -9,7 +9,24 @@ const LAB_CAT = [
   ["Heces", ["Coproparasitario", "Coproparasitario seriado (3 muestras)", "Sangre oculta en heces", "Coprocultivo", "Rotavirus / adenovirus"]],
   ["Microbiología", ["Cultivo y antibiograma de secreción", "Hisopado faríngeo (cultivo)", "Baciloscopía (BK) en esputo", "Gram y fresco de secreción vaginal", "KOH (hongos)"]],
   ["Toxicología y ocupacional", ["Colinesterasa", "Plomo en sangre", "Drogas de abuso en orina (panel)", "Alcohol en sangre"]],
+  ["Imagenología", ["Rayos X de tórax (PA)", "Rayos X de tórax (PA y lateral)", "Rayos X de columna cervical", "Rayos X de columna lumbosacra", "Rayos X de rodilla", "Rayos X de hombro", "Rayos X de mano", "Rayos X de senos paranasales", "Ecografía abdominal", "Ecografía renal y de vías urinarias", "Ecografía pélvica", "Ecografía obstétrica", "Ecografía tiroidea", "Ecografía mamaria", "Ecografía prostática", "Ecografía de partes blandas", "Mamografía", "Tomografía (especificar región)"]],
+  ["Otros estudios", ["Electrocardiograma", "Espirometría", "Audiometría", "Optometría / agudeza visual"]],
 ];
+// exámenes escritos a mano que en realidad son de imagen u otros estudios
+const IMG_RE = /rayos|^rx\b|\brx\b|radiograf|ecograf|ecosonograf|ultrason|tomograf|\btac\b|resonancia|mamograf|densitometr|doppler/i;
+const EST_RE = /electrocardiograma|\becg\b|\bekg\b|espirometr|audiometr|optometr|agudeza visual|holter|ecocardiograma|prueba de esfuerzo/i;
+const IMG_CAT = ["Imagenología", "Otros estudios"];
+function olGroups(chosen, otros) {
+  const grupos = LAB_CAT.map(([g, l]) => [g, l.filter((x) => chosen.includes(x))]).filter(([, l]) => l.length);
+  const add = (g, e) => { const k = grupos.find((x) => x[0] === g); if (k) k[1].push(e); else grupos.push([g, [e]]); };
+  otros.forEach((e) => add(IMG_RE.test(e) ? "Imagenología" : EST_RE.test(e) ? "Otros estudios" : "Otros", e));
+  return grupos;
+}
+// subtítulo de la orden según lo pedido
+function olSub(grupos) {
+  const img = grupos.some(([g]) => IMG_CAT.includes(g)), lab = grupos.some(([g]) => !IMG_CAT.includes(g));
+  return img && lab ? "de laboratorio clínico e imagen" : img ? (grupos.some(([g]) => g === "Imagenología") ? "de imagen y estudios complementarios" : "estudios complementarios") : "de laboratorio clínico";
+}
 const LAB_PERF = {
   "Chequeo general": ["Biometría hemática completa", "Glucosa en ayunas", "Urea / BUN", "Creatinina", "Ácido úrico", "Colesterol total", "HDL colesterol", "LDL colesterol", "Triglicéridos", "Examen elemental y microscópico de orina (EMO)", "Coproparasitario"],
   "Preocupacional / ocupacional": ["Biometría hemática completa", "Grupo sanguíneo y factor Rh", "Glucosa en ayunas", "Creatinina", "Colesterol total", "Triglicéridos", "VDRL / RPR", "VIH 1 y 2 (prueba de 4.ª generación)", "Examen elemental y microscópico de orina (EMO)", "Coproparasitario"],
@@ -38,19 +55,25 @@ function labPrep(ex) {
   if (has(/Prolactina/)) o.push("Prolactina: reposo de 20 minutos antes de la toma; no realizar ejercicio el día anterior.");
   if (has(/TSH|T4|T3/)) o.push("Hormonas tiroideas: si toma levotiroxina, hacerse la muestra antes de la dosis del día.");
   if (has(/Baciloscopía/)) o.push("Baciloscopía: esputo de la primera expectoración de la mañana (no saliva), en frasco estéril.");
+  if (has(/Rayos X|Mamograf|Tomograf|rayos|radiograf/i)) o.push("Imagen: retirar joyas y objetos metálicos de la zona; avisar al técnico si existe posibilidad de embarazo.");
+  if (has(/Ecografía abdominal/)) o.push("Ecografía abdominal: ayuno de 6 a 8 horas.");
+  if (has(/Ecografía (renal|pélvica|prostática)/)) o.push("Ecografía pélvica, renal o prostática: tomar 1 litro de agua 1 hora antes y no orinar hasta el examen (vejiga llena).");
+  if (has(/Mamograf/)) o.push("Mamografía: no usar desodorante, talco ni cremas en axilas o mamas el día del examen.");
+  if (has(/Espirometr/)) o.push("Espirometría: no fumar 4 horas antes ni hacer ejercicio intenso; consulte si debe suspender inhaladores.");
+  if (has(/Audiometr/)) o.push("Audiometría: evitar exposición a ruido intenso las 12 a 14 horas previas.");
   if (has(/secreción vaginal/)) o.push("Secreción vaginal: no usar óvulos ni duchas vaginales y evitar relaciones sexuales 48 horas antes.");
   return o;
 }
 
 V.lab = (pre) => {
   const opts = Object.values(DB.patients).map((p) => `<option value="${esc(p.cedula)}">${esc(p.nombre)}</option>`).join("");
-  $("#main").innerHTML = `<h1>Orden de exámenes de laboratorio</h1><p class="sub">Folio que se asignará: <span class="tag">${nextFolio("OL", true)}</span>. Para el laboratorio privado o de la empresa. Si el paciente va a la red pública, usa el formulario MSP 010A desde la atención.</p>
+  $("#main").innerHTML = `<h1>Orden de exámenes</h1><p class="sub">Folio que se asignará: <span class="tag">${nextFolio("OL", true)}</span>. Laboratorio, imagen (rayos X, ecografías) y otros estudios, para centros privados o de la empresa. Si el paciente va a la red pública, usa el formulario MSP 010A desde la atención.</p>
   <form id="f">${patientFields(`<label class="span2">Ocupación<input name="ocupacion"></label>`)}
   <div class="card"><h2>Solicitud</h2><div class="grid">
     <label>Fecha<input type="date" name="fecha" value="${today()}"></label>
     <label class="span2">Diagnóstico presuntivo<input name="dx"></label><label>CIE-10<input name="cie"></label>
     <label>Prioridad<select name="pri"><option>Rutina</option><option>Urgente</option></select></label>
-    <label class="span3">Laboratorio (opcional)<input name="labn" placeholder="Nombre del laboratorio al que se envía"></label>
+    <label class="span3">Laboratorio / centro (opcional)<input name="labn" placeholder="Laboratorio o centro de imagen al que se envía"></label>
   </div></div>
   <div class="card"><h2>Exámenes</h2>
     <div class="row" style="margin-bottom:10px"><span class="hint">Perfiles:</span>${Object.keys(LAB_PERF).map((k) => `<button type="button" class="btn s sm" data-pf="${esc(k)}">${esc(k)}</button>`).join("")}<button type="button" class="btn d sm" id="labclr">Limpiar</button></div>
@@ -82,8 +105,7 @@ V.lab = (pre) => {
     e.preventDefault(); const p = readPatient(f); if (!p.cedula || !p.nombre) return toast("Falta la cédula o el nombre del paciente.");
     const chosen = $$("[data-ex]:checked", f).map((i) => i.dataset.ex), otros = f.otros.value.split("\n").map((x) => x.trim()).filter(Boolean);
     if (!chosen.length && !otros.length) return toast("Elige al menos un examen.");
-    const grupos = LAB_CAT.map(([g, l]) => [g, l.filter((x) => chosen.includes(x))]).filter(([, l]) => l.length);
-    if (otros.length) grupos.push(["Otros", otros]);
+    const grupos = olGroups(chosen, otros);
     const doc = { folio: nextFolio("OL"), type: "OL", date: f.fecha.value || today(), status: "Emitida", patient: p,
       data: { dx: f.dx.value.trim(), cie: f.cie.value.trim(), pri: f.pri.value, labn: f.labn.value.trim(), grupos, ex: grupos.flatMap(([, l]) => l), prep: f.prep.value.trim(), clin: f.clin.value.trim() } };
     storePatient(p); DB.docs.unshift(doc); save(); openDoc(doc); toast(`Orden ${doc.folio} emitida y guardada.`); V.lab();
@@ -93,12 +115,14 @@ V.lab = (pre) => {
 
 function renderOL(doc, mode) {
   const c = chrome(doc, "p"), d = doc.data, p = doc.patient;
+  // órdenes antiguas: lo escrito en «Otros» que sea imagen pasa a su grupo
+  const grupos = d.grupos.flatMap(([g, l]) => (g === "Otros" ? olGroups([], l) : [[g, l]])).reduce((a, [g, l]) => { const k = a.find((x) => x[0] === g); if (k) k[1].push(...l); else a.push([g, l.slice()]); return a; }, []);
   const n = d.ex.length, cols = n > 14 ? 2 : 1;
-  return `<div class="page a4p">${c.wm}<div class="z">${c.head("ORDEN DE EXÁMENES", "de laboratorio clínico")}
-    ${ptable(p, [["Diagnóstico presuntivo", d.dx || "", "CIE-10", d.cie || ""], ["Prioridad", d.pri, "Laboratorio", d.labn || "—"]])}
+  return `<div class="page a4p">${c.wm}<div class="z">${c.head("ORDEN DE EXÁMENES", olSub(grupos))}
+    ${ptable(p, [["Diagnóstico presuntivo", d.dx || "", "CIE-10", d.cie || ""], ["Prioridad", d.pri, "Laboratorio / centro", d.labn || ""]])}
     ${d.clin ? `<div class="sm" style="margin:-2px 0 6px"><b>Datos clínicos:</b> ${esc(d.clin)}</div>` : ""}
     <div class="sec"><em>01</em>EXÁMENES SOLICITADOS <span class="sm" style="font-weight:400;letter-spacing:0">(${n})</span></div>
-    <div class="olx" style="column-count:${cols}">${d.grupos.map(([g, l]) => `<div class="olg"><b>${esc(g)}</b><ul>${l.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>`).join("")}</div>
+    <div class="olx" style="column-count:${cols}">${grupos.map(([g, l]) => `<div class="olg"><b>${esc(g)}</b><ul>${l.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>`).join("")}</div>
     ${d.prep ? `<div class="sec"><em>02</em>INDICACIONES PARA EL PACIENTE</div><div class="concl" style="font-size:8.8pt">${esc(d.prep).split("\n").map((x) => "• " + x).join("<br>")}</div>` : ""}
     <div class="sig" style="margin-top:12mm"><div class="sm">Fecha de emisión: <b>${fmt(doc.date)}</b><br>Válida por 30 días.</div>${c.sig(mode)}</div>
     </div>${c.foot}</div>`;
