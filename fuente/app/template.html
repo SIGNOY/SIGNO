@@ -66,7 +66,7 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
 .ocd .octt{text-align:center;font-weight:700;font-size:11.5pt;margin:2mm 6mm 5mm}
 .ocd .ocbd p{margin:0 0 2.2mm}.ocd .ocbd p.h{font-weight:700;margin-top:4mm}.ocd .ocbd p.q{margin-left:8mm;font-style:italic}
 .ocd .af{display:inline-block;border-bottom:1px dotted #555;min-width:20mm;padding:0 1mm;font-weight:700;text-align:left;outline:none}
-.ocd .ocsg{margin-top:8mm;text-align:left}.ocd .ocsg2{text-align:center}.ocd .ocln{width:80mm;border-top:1px solid #000;margin:14mm 0 1.5mm}.ocd .ocsg2 .ocln{margin:14mm auto 1.5mm}
+.ocd .ocsg{margin-top:5mm;text-align:left}.ocd .ocsg2{text-align:center}.ocd .ocln{width:80mm;border-top:1px solid #000;margin:12mm 0 1.5mm}.ocd .ocsg2 .ocln{margin:12mm auto 1.5mm}
 .ocd .ocft{position:absolute;left:20mm;right:20mm;bottom:7mm;display:flex;justify-content:space-between;font-size:8pt;color:#4A5B6B;font-family:Calibri,Arial,sans-serif}
 .msp .oct{font-weight:400;font-style:normal;color:#0b1f3a;font-size:8pt;text-decoration:none;text-transform:none}
 @media print{.ocd .af{border-bottom:0}}
@@ -234,7 +234,7 @@ const KEY = "signo_consultorio_v1";
 const TYPES = { RX: "Receta médica", SM: "Certificado de salud mental", IE: "Certificado IESS", CM: "Certificado médico", OL: "Orden de exámenes" };
 const DEF = {
   settings: { nombre: "Dr. Yassir Josué Dumani Manzano", titulo: "Médico · Magíster en Prevención de Riesgos Laborales",
-    ci: "0955259585", senescyt: "1006-2021-2377353", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
+    ci: "0955259585", senescyt: "1006-2021-2377353", acess: "0955259585", tit4: "Máster en Prevención de Riesgos Laborales", reg4: "7241225693", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
     tel: "099 379 4058", wa: "593993794058", email: "yassirjosue@live.com", ciudad: "Guayaquil", validezRx: 30,
     inst: "RED PRIVADA", estProv: "GUAYAS", estCanton: "DAULE", estParroq: "LA AURORA (SATÉLITE)", unicodigo: "", estab: "SIGNO · MEDICINA INTEGRAL", tipologia: "CONSULTORIO", pn1: "YASSIR", pa1: "DUMANI", pa2: "MANZANO" },
   counters: { RX: { year: 2026, next: 51 }, SM: { year: 2026, next: 2 }, CM: { year: 2026, next: 1 }, IE: { year: 2026, next: 1 }, OL: { year: 2026, next: 1 } }, patients: {}, docs: [], lastBackup: null,
@@ -244,6 +244,7 @@ function load() {
   try { DB = JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { DB = null; }
   if (!DB) DB = JSON.parse(JSON.stringify(DEF));
   DB.settings = Object.assign({}, DEF.settings, DB.settings || {});
+  ["acess", "tit4", "reg4"].forEach((k) => { if (!DB.settings[k]) DB.settings[k] = DEF.settings[k]; });
   DB.counters = DB.counters || {}; DB.patients = DB.patients || {}; DB.docs = DB.docs || []; DB.atenciones = DB.atenciones || []; DB.ocup = DB.ocup || []; DB.empresas = DB.empresas || {};
 }
 function save() {
@@ -570,7 +571,8 @@ V.ajustes = () => {
   <form class="card" id="f"><h2>Datos del médico</h2><div class="grid">
     <label class="span2">Nombre completo<input name="nombre" value="${esc(s.nombre)}"></label><label class="span2">Título<input name="titulo" value="${esc(s.titulo)}"></label>
     <label>Cédula<input name="ci" value="${esc(s.ci)}"></label><label>Registro SENESCYT<input name="senescyt" value="${esc(s.senescyt)}"></label>
-    <label>Código médico ACESS<input name="acess" value="${esc(s.acess || "")}" placeholder="Si no lo pones, va el registro SENESCYT"></label>
+    <label>Código médico ACESS<input name="acess" value="${esc(s.acess || "")}" placeholder="Normalmente es la cédula"></label>
+    <label class="span2">Título de cuarto nivel<input name="tit4" value="${esc(s.tit4 || "")}"></label><label>Registro del título de cuarto nivel<input name="reg4" value="${esc(s.reg4 || "")}"></label>
     <label>Teléfono visible<input name="tel" value="${esc(s.tel)}"></label><label>WhatsApp (con 593)<input name="wa" value="${esc(s.wa)}"></label>
     <label class="span2">Correo<input name="email" value="${esc(s.email)}"></label><label>Ciudad<input name="ciudad" value="${esc(s.ciudad)}"></label><label>Validez de recetas (días)<input type="number" name="validezRx" value="${esc(s.validezRx)}"></label>
     <label class="span4">Dirección del consultorio<input name="dir" value="${esc(s.dir)}"></label>
@@ -584,7 +586,7 @@ V.ajustes = () => {
   <div class="row" style="margin-top:12px"><button class="btn p">Guardar ajustes</button></div></form>`;
   $("#f").onsubmit = (e) => {
     e.preventDefault(); const f = e.target;
-    ["nombre", "titulo", "ci", "senescyt", "acess", "tel", "wa", "email", "ciudad", "dir", "validezRx", "inst", "unicodigo", "estab", "tipologia", "pn1", "pa1", "pa2", "estProv", "estCanton", "estParroq"].forEach((k) => (DB.settings[k] = f[k].value.trim()));
+    ["nombre", "titulo", "ci", "senescyt", "acess", "tit4", "reg4", "tel", "wa", "email", "ciudad", "dir", "validezRx", "inst", "unicodigo", "estab", "tipologia", "pn1", "pa1", "pa2", "estProv", "estCanton", "estParroq"].forEach((k) => (DB.settings[k] = f[k].value.trim()));
     $$("[data-c]", f).forEach((i) => { DB.counters[i.dataset.c] = { year: new Date().getFullYear(), next: Math.max(1, parseInt(i.value, 10) || 1) }; });
     save(); toast("Ajustes guardados.");
   };

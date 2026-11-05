@@ -66,7 +66,7 @@ table.t td input,table.t td select{width:100%;min-height:36px;padding:6px 8px}
 .ocd .octt{text-align:center;font-weight:700;font-size:11.5pt;margin:2mm 6mm 5mm}
 .ocd .ocbd p{margin:0 0 2.2mm}.ocd .ocbd p.h{font-weight:700;margin-top:4mm}.ocd .ocbd p.q{margin-left:8mm;font-style:italic}
 .ocd .af{display:inline-block;border-bottom:1px dotted #555;min-width:20mm;padding:0 1mm;font-weight:700;text-align:left;outline:none}
-.ocd .ocsg{margin-top:8mm;text-align:left}.ocd .ocsg2{text-align:center}.ocd .ocln{width:80mm;border-top:1px solid #000;margin:14mm 0 1.5mm}.ocd .ocsg2 .ocln{margin:14mm auto 1.5mm}
+.ocd .ocsg{margin-top:5mm;text-align:left}.ocd .ocsg2{text-align:center}.ocd .ocln{width:80mm;border-top:1px solid #000;margin:12mm 0 1.5mm}.ocd .ocsg2 .ocln{margin:12mm auto 1.5mm}
 .ocd .ocft{position:absolute;left:20mm;right:20mm;bottom:7mm;display:flex;justify-content:space-between;font-size:8pt;color:#4A5B6B;font-family:Calibri,Arial,sans-serif}
 .msp .oct{font-weight:400;font-style:normal;color:#0b1f3a;font-size:8pt;text-decoration:none;text-transform:none}
 @media print{.ocd .af{border-bottom:0}}
@@ -2981,7 +2981,7 @@ const KEY = "signo_consultorio_v1";
 const TYPES = { RX: "Receta médica", SM: "Certificado de salud mental", IE: "Certificado IESS", CM: "Certificado médico", OL: "Orden de exámenes" };
 const DEF = {
   settings: { nombre: "Dr. Yassir Josué Dumani Manzano", titulo: "Médico · Magíster en Prevención de Riesgos Laborales",
-    ci: "0955259585", senescyt: "1006-2021-2377353", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
+    ci: "0955259585", senescyt: "1006-2021-2377353", acess: "0955259585", tit4: "Máster en Prevención de Riesgos Laborales", reg4: "7241225693", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
     tel: "099 379 4058", wa: "593993794058", email: "yassirjosue@live.com", ciudad: "Guayaquil", validezRx: 30,
     inst: "RED PRIVADA", estProv: "GUAYAS", estCanton: "DAULE", estParroq: "LA AURORA (SATÉLITE)", unicodigo: "", estab: "SIGNO · MEDICINA INTEGRAL", tipologia: "CONSULTORIO", pn1: "YASSIR", pa1: "DUMANI", pa2: "MANZANO" },
   counters: { RX: { year: 2026, next: 51 }, SM: { year: 2026, next: 2 }, CM: { year: 2026, next: 1 }, IE: { year: 2026, next: 1 }, OL: { year: 2026, next: 1 } }, patients: {}, docs: [], lastBackup: null,
@@ -2991,6 +2991,7 @@ function load() {
   try { DB = JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { DB = null; }
   if (!DB) DB = JSON.parse(JSON.stringify(DEF));
   DB.settings = Object.assign({}, DEF.settings, DB.settings || {});
+  ["acess", "tit4", "reg4"].forEach((k) => { if (!DB.settings[k]) DB.settings[k] = DEF.settings[k]; });
   DB.counters = DB.counters || {}; DB.patients = DB.patients || {}; DB.docs = DB.docs || []; DB.atenciones = DB.atenciones || []; DB.ocup = DB.ocup || []; DB.empresas = DB.empresas || {};
 }
 function save() {
@@ -3317,7 +3318,8 @@ V.ajustes = () => {
   <form class="card" id="f"><h2>Datos del médico</h2><div class="grid">
     <label class="span2">Nombre completo<input name="nombre" value="${esc(s.nombre)}"></label><label class="span2">Título<input name="titulo" value="${esc(s.titulo)}"></label>
     <label>Cédula<input name="ci" value="${esc(s.ci)}"></label><label>Registro SENESCYT<input name="senescyt" value="${esc(s.senescyt)}"></label>
-    <label>Código médico ACESS<input name="acess" value="${esc(s.acess || "")}" placeholder="Si no lo pones, va el registro SENESCYT"></label>
+    <label>Código médico ACESS<input name="acess" value="${esc(s.acess || "")}" placeholder="Normalmente es la cédula"></label>
+    <label class="span2">Título de cuarto nivel<input name="tit4" value="${esc(s.tit4 || "")}"></label><label>Registro del título de cuarto nivel<input name="reg4" value="${esc(s.reg4 || "")}"></label>
     <label>Teléfono visible<input name="tel" value="${esc(s.tel)}"></label><label>WhatsApp (con 593)<input name="wa" value="${esc(s.wa)}"></label>
     <label class="span2">Correo<input name="email" value="${esc(s.email)}"></label><label>Ciudad<input name="ciudad" value="${esc(s.ciudad)}"></label><label>Validez de recetas (días)<input type="number" name="validezRx" value="${esc(s.validezRx)}"></label>
     <label class="span4">Dirección del consultorio<input name="dir" value="${esc(s.dir)}"></label>
@@ -3331,7 +3333,7 @@ V.ajustes = () => {
   <div class="row" style="margin-top:12px"><button class="btn p">Guardar ajustes</button></div></form>`;
   $("#f").onsubmit = (e) => {
     e.preventDefault(); const f = e.target;
-    ["nombre", "titulo", "ci", "senescyt", "acess", "tel", "wa", "email", "ciudad", "dir", "validezRx", "inst", "unicodigo", "estab", "tipologia", "pn1", "pa1", "pa2", "estProv", "estCanton", "estParroq"].forEach((k) => (DB.settings[k] = f[k].value.trim()));
+    ["nombre", "titulo", "ci", "senescyt", "acess", "tit4", "reg4", "tel", "wa", "email", "ciudad", "dir", "validezRx", "inst", "unicodigo", "estab", "tipologia", "pn1", "pa1", "pa2", "estProv", "estCanton", "estParroq"].forEach((k) => (DB.settings[k] = f[k].value.trim()));
     $$("[data-c]", f).forEach((i) => { DB.counters[i.dataset.c] = { year: new Date().getFullYear(), next: Math.max(1, parseInt(i.value, 10) || 1) }; });
     save(); toast("Ajustes guardados.");
   };
@@ -4829,6 +4831,22 @@ function ocMap(code, ev) {
   }
   return o;
 }
+/* nombre del profesional con sus títulos y registros (bloque O del FEMO y E del certificado) */
+function ocProf() {
+  const s = DB.settings;
+  const t4 = s.tit4 || "", c4 = t4.replace(/^Máster en /i, "Máster ").replace(/Prevención de /i, "Prev. ");
+  return { nom: UP(s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), l1: `Médico · Reg. SENESCYT ${s.senescyt}${s.acess ? " · ACESS " + s.acess : ""}`, l2: t4 ? `${t4}${s.reg4 ? " · Reg. " + s.reg4 : ""}` : "",
+    f1: `Médico · Reg. ${s.senescyt}`, f2: t4 ? `${c4}${s.reg4 ? " · Reg. " + s.reg4 : ""}` : "" };
+}
+function ocRich(pages, si, addr, html) {
+  for (const p of pages) {
+    if (p._si !== si) continue; const td = p.querySelector('td[data-a="' + addr + '"]'); if (!td) continue;
+    const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "left"; d.style.lineHeight = "1.12"; d.innerHTML = html;
+    let fs = 7.5; d.style.fontSize = fs + "pt";
+    while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
+    d.removeAttribute("contenteditable"); return;
+  }
+}
 /* texto escrito a continuación de una etiqueta oficial («Descripción», «Observación:», «Otros ____»…) */
 function ocLabel(pages, si, addr, text, more) {
   if (!text) return;
@@ -4868,12 +4886,14 @@ function ocPost(code, pages, ev) {
     if (ev.tipo !== "RETIRO") ocLabel(pages, 2, "B56", ev.aptObs, ["B57"]);
     ocLabel(pages, 2, "B59", ev.rec, ["B60", "B61", "B62", "B63"]);
     if (ev.tipo === "RETIRO") ocLabel(pages, 2, "B67", (ev.ret || {}).obs, ["B68", "B69", "B70", "B71"]);
+    const pr = ocProf(); ocRich(pages, 2, "K73", `<b>${esc(pr.nom)}</b><br>${esc(pr.f1)}${pr.f2 ? "<br>" + esc(pr.f2) : ""}`);
   }
   if (code === "CEMO") {
     const ct = ev.cert || {};
     ["K10", "M10", "N10", "O10", "P10"].forEach((a) => { for (const p of pages) { const td = p.querySelector(`td[data-a="${a}"]`); if (td) { td.firstChild.style.textAlign = "center"; td.firstChild.style.fontWeight = "700"; } } });
     ocLabel(pages, 0, "A24", ct.rec);
     ocLabel(pages, 0, "A25", ct.obs, ["A26"]);
+    const pr = ocProf(); ocRich(pages, 0, "E33", `<b>${esc(pr.nom)}</b><br>${esc(pr.f1)}${pr.f2 ? "<br>" + esc(pr.f2) : ""}`);
   }
 }
 
@@ -4933,7 +4953,7 @@ function ocLegal(code, ev, pv) {
       `<p>${EL(1)} vinculado con el Centro de Trabajo acuerda y se compromete a mantener bajo confidencialidad la información generada y conocida en virtud de la función que desempeñe en el Centro de Trabajo mientras dure su relación laboral y después de la misma en estricto respeto a la normativa legal vigente, en razón de la sensibilidad de la información y las competencias.</p>`,
       `<p class="h">CLÁUSULA OCTAVA. - ACEPTACIÓN DE LAS PARTES:</p>`,
       `<p>${EL(1)} acepta el contenido de todas y cada una de las cláusulas del presente Acuerdo y en consecuencia se compromete a cumplirlas en toda su extensión, en fe y garantía de lo cual, y para los fines legales correspondientes, suscribe en la ciudad de ${F("ciu", ciu, 30)} al ${F("dia", String(+dd), 8)} de ${F("mes", MESES[+mm - 1], 22)} de ${F("anio", yy, 12)}.</p>`,
-      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}</p></div>`,
+      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}${!cf.ci || cf.ci === s.ci ? `<br>${F("tt1", ocProf().l1, 60)}${ocProf().l2 ? `<br>${F("tt2", ocProf().l2, 60)}` : ""}` : ""}</p></div>`,
     ];
   } else {
     title = "AUTORIZACION DEL TRATAMIENTO DE LA INFORMACION EN SALUD OCUPACIONAL Y DE LA PRACTICA MEDICA ASISTENCIAL OCUPACIONAL";

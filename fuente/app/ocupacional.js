@@ -122,6 +122,22 @@ function ocMap(code, ev) {
   }
   return o;
 }
+/* nombre del profesional con sus títulos y registros (bloque O del FEMO y E del certificado) */
+function ocProf() {
+  const s = DB.settings;
+  const t4 = s.tit4 || "", c4 = t4.replace(/^Máster en /i, "Máster ").replace(/Prevención de /i, "Prev. ");
+  return { nom: UP(s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), l1: `Médico · Reg. SENESCYT ${s.senescyt}${s.acess ? " · ACESS " + s.acess : ""}`, l2: t4 ? `${t4}${s.reg4 ? " · Reg. " + s.reg4 : ""}` : "",
+    f1: `Médico · Reg. ${s.senescyt}`, f2: t4 ? `${c4}${s.reg4 ? " · Reg. " + s.reg4 : ""}` : "" };
+}
+function ocRich(pages, si, addr, html) {
+  for (const p of pages) {
+    if (p._si !== si) continue; const td = p.querySelector('td[data-a="' + addr + '"]'); if (!td) continue;
+    const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "left"; d.style.lineHeight = "1.12"; d.innerHTML = html;
+    let fs = 7.5; d.style.fontSize = fs + "pt";
+    while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
+    d.removeAttribute("contenteditable"); return;
+  }
+}
 /* texto escrito a continuación de una etiqueta oficial («Descripción», «Observación:», «Otros ____»…) */
 function ocLabel(pages, si, addr, text, more) {
   if (!text) return;
@@ -161,12 +177,14 @@ function ocPost(code, pages, ev) {
     if (ev.tipo !== "RETIRO") ocLabel(pages, 2, "B56", ev.aptObs, ["B57"]);
     ocLabel(pages, 2, "B59", ev.rec, ["B60", "B61", "B62", "B63"]);
     if (ev.tipo === "RETIRO") ocLabel(pages, 2, "B67", (ev.ret || {}).obs, ["B68", "B69", "B70", "B71"]);
+    const pr = ocProf(); ocRich(pages, 2, "K73", `<b>${esc(pr.nom)}</b><br>${esc(pr.f1)}${pr.f2 ? "<br>" + esc(pr.f2) : ""}`);
   }
   if (code === "CEMO") {
     const ct = ev.cert || {};
     ["K10", "M10", "N10", "O10", "P10"].forEach((a) => { for (const p of pages) { const td = p.querySelector(`td[data-a="${a}"]`); if (td) { td.firstChild.style.textAlign = "center"; td.firstChild.style.fontWeight = "700"; } } });
     ocLabel(pages, 0, "A24", ct.rec);
     ocLabel(pages, 0, "A25", ct.obs, ["A26"]);
+    const pr = ocProf(); ocRich(pages, 0, "E33", `<b>${esc(pr.nom)}</b><br>${esc(pr.f1)}${pr.f2 ? "<br>" + esc(pr.f2) : ""}`);
   }
 }
 
@@ -226,7 +244,7 @@ function ocLegal(code, ev, pv) {
       `<p>${EL(1)} vinculado con el Centro de Trabajo acuerda y se compromete a mantener bajo confidencialidad la información generada y conocida en virtud de la función que desempeñe en el Centro de Trabajo mientras dure su relación laboral y después de la misma en estricto respeto a la normativa legal vigente, en razón de la sensibilidad de la información y las competencias.</p>`,
       `<p class="h">CLÁUSULA OCTAVA. - ACEPTACIÓN DE LAS PARTES:</p>`,
       `<p>${EL(1)} acepta el contenido de todas y cada una de las cláusulas del presente Acuerdo y en consecuencia se compromete a cumplirlas en toda su extensión, en fe y garantía de lo cual, y para los fines legales correspondientes, suscribe en la ciudad de ${F("ciu", ciu, 30)} al ${F("dia", String(+dd), 8)} de ${F("mes", MESES[+mm - 1], 22)} de ${F("anio", yy, 12)}.</p>`,
-      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}</p></div>`,
+      `<div class="ocsg"><p><b>FIRMA DEL SERVIDOR:</b></p><div class="ocln"></div><p>${F("nom2", UP(cf.nombre || s.nombre.replace(/^Dr(a)?\.?\s*/i, "")), 60)}<br>C.I. ${F("ci2", cf.ci || s.ci, 30)}${!cf.ci || cf.ci === s.ci ? `<br>${F("tt1", ocProf().l1, 60)}${ocProf().l2 ? `<br>${F("tt2", ocProf().l2, 60)}` : ""}` : ""}</p></div>`,
     ];
   } else {
     title = "AUTORIZACION DEL TRATAMIENTO DE LA INFORMACION EN SALUD OCUPACIONAL Y DE LA PRACTICA MEDICA ASISTENCIAL OCUPACIONAL";
