@@ -14,9 +14,9 @@ var MSP = (function () {
     ".msp .c.r90{writing-mode:vertical-rl;transform:rotate(180deg);white-space:normal;align-items:center;justify-content:center}" +
     ".msp .c.r270{writing-mode:vertical-rl;white-space:normal;align-items:center;justify-content:center}" +
     ".msp .c.rv{writing-mode:vertical-rl;text-orientation:upright;align-items:center;justify-content:center}" +
-    ".msp td.f .c{font-size:8pt;font-weight:400;font-style:normal;color:#0b1f3a;white-space:normal;overflow:hidden;justify-content:center;text-align:left;text-decoration:none}" +
+    ".msp td.f .c{font-size:var(--fs,8pt);font-weight:400;font-style:normal;color:#0b1f3a;white-space:normal;overflow:hidden;justify-content:center;text-align:left;text-decoration:none}" +
     ".msp td.f .c.ln{white-space:nowrap;padding-left:3px}" +
-    ".msp td.f .c.x{text-align:center;font-weight:700;font-size:8pt}" +
+    ".msp td.f .c.x{text-align:center;font-weight:700;font-size:var(--fs,8pt)}" +
     ".msp td.f.cb .c{text-align:center;font-weight:700}" +
     ".mspp.edit td.f .c{outline:none;cursor:text}" +
     ".mspp.edit td.f.cb .c{cursor:pointer}" +
@@ -134,6 +134,8 @@ var MSP = (function () {
       var s = Math.min(g.aw / W, g.ah / H, 1.6);
       t.style.zoom = s;
       sc.style.left = (g.m[3] + (g.aw - W * s) / 2) + "px";
+      // letra de los datos: unos 8,5 pt en el papel, aunque la hoja se reduzca para caber en A4
+      p._fs = Math.min(14, Math.max(8, 8.5 / s)); t.style.setProperty("--fs", p._fs.toFixed(1) + "pt");
     });
   }
 
@@ -183,6 +185,8 @@ var MSP = (function () {
     for (var i = 0; i < tds.length && k < words.length; i++) {
       var td = tds[i], d = td.firstChild;
       td.classList.add("f"); d.classList.add("ln"); d.textContent = "";
+      var pg = td.closest ? td.closest(".mspp") : null, mx = Math.max(4.5, Math.floor(((td._h - 2) / 1.333 / 1.12) * 2) / 2);
+      if (pg && pg._fs) d.style.fontSize = Math.min(pg._fs, mx) + "pt";
       if (i === tds.length - 1) { // último renglón: todo lo que queda
         d.classList.remove("ln");
         d.textContent = words.slice(k).join(" ").replace(/ ?\n ?/g, " · ");
@@ -202,10 +206,15 @@ var MSP = (function () {
   // Reduce la letra de los campos que no caben
   function fit(pages) {
     pages.forEach(function (p) {
+      var base = p._fs || 8;
       p.querySelectorAll("td.f .c").forEach(function (d) {
-        if (!d.textContent || d.classList.contains("ln")) return;
-        var fs = 8; d.style.fontSize = "";
+        if (!d.textContent || d.classList.contains("ln") || d.getAttribute("data-nofit")) return;
+        var td = d.parentNode, txt = d.textContent;
+        // valores cortos en casillas tipo columna: centrados
+        if (!d.querySelector("br") && txt.length <= 40 && td._w < 330 && d.style.whiteSpace !== "pre-wrap") d.style.textAlign = "center";
+        var fs = base, jc = d.style.justifyContent; d.style.fontSize = ""; d.style.justifyContent = "flex-start"; // medir sin centrar: lo que sobra hacia arriba no se cuenta
         while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
+        d.style.justifyContent = jc;
       });
     });
   }

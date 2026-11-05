@@ -81,12 +81,12 @@ function ocMap(code, ev) {
     const v = ev.vit || {};
     Object.assign(o, { "0:B56": v.t, "0:I56": v.pa, "0:P56": v.fc, "0:W56": v.fr, "0:AC56": v.sat, "0:AG56": v.peso, "0:AI56": v.talla, "0:AM56": v.imc, "0:AS56": v.pabd });
     Object.keys(ev.exf || {}).forEach((a) => { if (ev.exf[a]) o["0:" + a] = X; });
-    if (ev.exfObs) { const a = ["B72"]; a._text = ev.exfObs; o["0:B72~"] = a; }
+
     // G · factores de riesgo
     o["1:G2"] = ev.puesto;
     (ev.acts || []).forEach((t, i) => { if (t) o["1:" + OC_ACOL[i] + "5"] = t; });
     Object.keys(ev.rg || {}).forEach((r) => String(ev.rg[r]).split("").forEach((b, i) => { if (b === "1") o["1:" + OC_ACOL[i] + r] = X; }));
-    (ev.med7 || []).forEach((t, i) => { if (t) { const a = [OC_ACOL[i] + "67", OC_ACOL[i] + "69", OC_ACOL[i] + "71"]; a._text = t; o["1:" + a[0] + "~"] = a; } });
+
     // H · historia laboral
     (ev.hist || []).slice(0, 19).forEach((h, i) => {
       const r = 7 + i;
@@ -99,7 +99,7 @@ function ocMap(code, ev) {
     (ev.exams || []).slice(0, 5).forEach((x, i) => Object.assign(o, { ["2:B" + (36 + i)]: x.n, ["2:M" + (36 + i)]: ymd(x.f), ["2:T" + (36 + i)]: x.r }));
     (ev.dx || []).slice(0, 6).forEach((d, i) => Object.assign(o, { ["2:Q" + (45 + i)]: d.d, ["2:" + (d.t === "DEF" ? "BJ" : "BE") + (45 + i)]: X }));
     if (ev.tipo !== "RETIRO" && ev.apt) o["2:" + { "APTO": "P53", "APTO EN OBSERVACIÓN": "AE53", "APTO CON LIMITACIONES": "AS53", "NO APTO": "BA53" }[ev.apt]] = X;
-    if (ev.tipo !== "RETIRO" && ev.lim) { const a = ["B54", "B55"]; a._text = ev.lim; o["2:B54~"] = a; }
+
     if (ev.tipo === "RETIRO") {
       const r = ev.ret || {};
       if (r.se) o["2:" + (r.se === "SI" ? "AG65" : "AW65")] = X;
@@ -117,8 +117,7 @@ function ocMap(code, ev) {
       "0:E33": UP(prof), "0:O33": cod,
     });
     if (ev.tipo !== "RETIRO" && ev.apt) o["0:" + { "APTO": "I17", "APTO EN OBSERVACIÓN": "S17", "APTO CON LIMITACIONES": "AC17", "NO APTO": "AK17" }[ev.apt]] = X;
-    const det = (ev.cert && ev.cert.det) || "";
-    if (det) { const a = ["A19", "A20", "A21"]; a._text = det; o["0:A19~"] = a; }
+
   }
   return o;
 }
@@ -133,10 +132,31 @@ function ocRich(pages, si, addr, html) {
   for (const p of pages) {
     if (p._si !== si) continue; const td = p.querySelector('td[data-a="' + addr + '"]'); if (!td) continue;
     const d = td.firstChild; td.classList.add("f"); d.classList.add("w"); d.style.display = "block"; d.style.textAlign = "left"; d.style.lineHeight = "1.12"; d.innerHTML = html;
-    let fs = 7.5; d.style.fontSize = fs + "pt";
+    let fs = (p._fs || 8) * 0.9; d.style.fontSize = fs + "pt";
     while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
     d.removeAttribute("contenteditable"); return;
   }
+}
+function ocCells(pages, si, addrs) { return addrs.map((a) => { for (const p of pages) if (p._si === si) { const td = p.querySelector('td[data-a="' + a + '"]'); if (td) return td; } return null; }).filter(Boolean); }
+function ocFlow(tds, text, k0) {
+  if (!tds.length || !text) return;
+  const words = String(text).replace(/\s+/g, " ").trim().split(" ");
+  let k = 0;
+  tds.forEach((td, i) => {
+    const d = td.firstChild, pg = td.closest(".mspp"), base = ((pg && pg._fs) || 8) * (k0 || 1);
+    td.classList.add("f"); d.classList.remove("ln"); d.classList.add("w"); d.setAttribute("data-nofit", "1");
+    d.style.display = "block"; d.style.textAlign = "left"; d.style.whiteSpace = "normal"; d.style.overflow = "hidden"; d.style.lineHeight = "1.1";
+    d.style.fontSize = Math.min(base, Math.max(4.5, Math.floor(((td._h - 2) / 1.333 / 1.12) * 2) / 2)) + "pt";
+    d.textContent = "";
+    if (k >= words.length) return;
+    if (i === tds.length - 1) { // última casilla: todo lo que queda, achicando si hace falta
+      d.textContent = words.slice(k).join(" "); k = words.length; let fs = parseFloat(d.style.fontSize);
+      while (fs > 4.5 && d.scrollHeight > d.clientHeight + 1) { fs -= 0.5; d.style.fontSize = fs + "pt"; }
+      return;
+    }
+    let line = "";
+    while (k < words.length) { const t = line ? line + " " + words[k] : words[k]; d.textContent = t; if (d.scrollHeight > d.clientHeight + 1 && line) { d.textContent = line; break; } line = t; k++; }
+  });
 }
 /* texto escrito a continuación de una etiqueta oficial («Descripción», «Observación:», «Otros ____»…) */
 function ocLabel(pages, si, addr, text, more) {
@@ -149,7 +169,7 @@ function ocLabel(pages, si, addr, text, more) {
   d.style.overflow = "hidden"; d.style.display = "block"; d.style.textAlign = "left";
   if (!rest.length) { // un solo renglón: ajustar el tamaño de letra
     d.classList.add("w"); d.style.whiteSpace = "normal"; d.innerHTML = span(text);
-    const sp = d.querySelector(".oct"); let fs = 8;
+    const sp = d.querySelector(".oct"); let fs = (td.closest(".mspp") || {})._fs || 8; sp.style.fontSize = fs + "pt";
     while (fs > 4.5 && (d.scrollHeight > d.clientHeight + 1 || d.scrollWidth > d.clientWidth + 1)) { fs -= 0.5; sp.style.fontSize = fs + "pt"; }
     return;
   }
@@ -158,7 +178,7 @@ function ocLabel(pages, si, addr, text, more) {
   d.style.whiteSpace = "nowrap"; let k = 0, line = "";
   while (k < words.length) { const t = line ? line + " " + words[k] : words[k]; d.innerHTML = span(t); if (d.scrollWidth > d.clientWidth + 1 && line) break; line = t; k++; }
   d.innerHTML = span(line);
-  if (k < words.length) MSP.lines(rest, words.slice(k).join(" "));
+  if (k < words.length) ocFlow(rest, words.slice(k).join(" "));
 }
 function ocPost(code, pages, ev) {
   if (!ev || ev.kind !== "ocup") return;
@@ -177,6 +197,9 @@ function ocPost(code, pages, ev) {
     if (ev.tipo !== "RETIRO") ocLabel(pages, 2, "B56", ev.aptObs, ["B57"]);
     ocLabel(pages, 2, "B59", ev.rec, ["B60", "B61", "B62", "B63"]);
     if (ev.tipo === "RETIRO") ocLabel(pages, 2, "B67", (ev.ret || {}).obs, ["B68", "B69", "B70", "B71"]);
+    ocFlow(ocCells(pages, 0, ["B72"]), ev.exfObs);
+    (ev.med7 || []).forEach((t, i) => ocFlow(ocCells(pages, 1, [OC_ACOL[i] + "67", OC_ACOL[i] + "69", OC_ACOL[i] + "71"]), t, 0.7));
+    if (ev.tipo !== "RETIRO") ocFlow(ocCells(pages, 2, ["B54", "B55"]), ev.lim);
     const pr = ocProf(); ocRich(pages, 2, "K73", `<b>${esc(pr.nom)}</b><br>${esc(pr.f1)}${pr.f2 ? "<br>" + esc(pr.f2) : ""}`);
   }
   if (code === "CEMO") {
@@ -184,6 +207,7 @@ function ocPost(code, pages, ev) {
     ["K10", "M10", "N10", "O10", "P10"].forEach((a) => { for (const p of pages) { const td = p.querySelector(`td[data-a="${a}"]`); if (td) { td.firstChild.style.textAlign = "center"; td.firstChild.style.fontWeight = "700"; } } });
     ocLabel(pages, 0, "A24", ct.rec);
     ocLabel(pages, 0, "A25", ct.obs, ["A26"]);
+    ocFlow(ocCells(pages, 0, ["A19", "A20", "A21"]), ct.det);
     const pr = ocProf(); ocRich(pages, 0, "E33", `<b>${esc(pr.nom)}</b><br>${esc(pr.f1)}${pr.f2 ? "<br>" + esc(pr.f2) : ""}`);
   }
 }
