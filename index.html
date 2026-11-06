@@ -181,7 +181,10 @@ table.d td b{color:#12263A}
   #print .mspp{box-shadow:none;margin:0}
   /* iPhone, iPad y Safari ponen sus propios márgenes y encabezado: la hoja se acorta para que quepa en una sola página */
   #print.wk .page.a4p{height:270mm}
-  #print.wk .page.a4l{height:178mm}#print.wk .page.a4l .z{zoom:.93}
+  /* las hojas horizontales (receta, certificados MSP) se imprimen giradas sobre una hoja vertical, porque Safari en iPhone no respeta la orientación */
+  #print .wkrot{position:relative;width:210mm;height:270mm;overflow:hidden;margin:0;page:msppor;break-after:page;page-break-after:always}
+  #print .wkrot:last-child{break-after:auto;page-break-after:auto}
+  #print .wkrot>*{position:absolute;left:0;top:0;margin:0!important;transform-origin:0 0;box-shadow:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -3520,6 +3523,16 @@ addEventListener("resize", () => { if ($("#modal").style.display === "block") fi
 /* versión web: funcionar sin internet e instalarse como aplicación */
 if (/^https?:/.test(location.protocol) && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 const WEBKIT_PRINT = (() => { const u = navigator.userAgent; return /iP(hone|ad|od)/.test(u) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) || (/Safari/.test(u) && !/Chrome|Chromium|CriOS|Edg|OPR|Firefox|Android/.test(u)); })();
+// en Safari (iPhone/iPad) cada hoja va dentro de un marco vertical: las horizontales giradas 90°, todas un poco reducidas para caber con sus márgenes
+function wkWrap(pr) {
+  pr.classList.toggle("wk", WEBKIT_PRINT); if (!WEBKIT_PRINT) return;
+  [...pr.children].forEach((el) => {
+    const land = el.classList.contains("a4l") || el.getAttribute("data-orient") === "landscape";
+    if (!land && !el.classList.contains("mspp")) return; // la receta vertical y certificados ya se acortan con CSS
+    const w = document.createElement("div"); w.className = "wkrot"; el.replaceWith(w); w.appendChild(el);
+    el.style.transform = land ? "translateX(200.5mm) rotate(90deg) scale(0.909)" : "translateX(9.5mm) scale(0.909)";
+  });
+}
 $("#sendwa").onclick = () => sendDialog("wa");
 $("#sendmail").onclick = () => sendDialog("mail");
 $("#doprint").onclick = () => {
@@ -3528,15 +3541,16 @@ $("#doprint").onclick = () => {
     $("#pagecss").textContent = "@page{margin:0}";
     const pr = $("#print"); pr.innerHTML = "";
     $$("#pv .mspp").forEach((p) => { const c = p.cloneNode(true); c.classList.remove("edit"); c.style.zoom = ""; pr.appendChild(c); });
+    wkWrap(pr); if (WEBKIT_PRINT) $("#pagecss").textContent = "@page{size:A4 portrait;margin:0}";
     const at = PVPAGES && PVPAGES.at, old = document.title;
     document.title = at ? `${at.id}_${(at.patient.nombre || "").replace(/\s+/g, "_")}_${at.kind === "ocup" ? "EMO" : "HCU"}` : "Formularios_MSP";
     setTimeout(() => { window.print(); document.title = old; }, 150);
     return;
   }
   if (!CUR) return;
-  $("#pagecss").textContent = `@page{size:A4 ${CUR.type === "RX" ? "landscape" : "portrait"};margin:0}`;
+  $("#pagecss").textContent = `@page{size:A4 ${CUR.type === "RX" && !WEBKIT_PRINT ? "landscape" : "portrait"};margin:0}`;
   $("#print").innerHTML = renderDoc(CUR, $("#sigmode").value);
-  $("#print").classList.toggle("wk", WEBKIT_PRINT);
+  wkWrap($("#print"));
   const old = document.title; document.title = `${CUR.folio}_${CUR.patient.nombre.replace(/\s+/g, "_")}`;
   setTimeout(() => { window.print(); document.title = old; }, 150);
 };
