@@ -168,35 +168,31 @@ table.d td b{color:#12263A}
 .halves{display:grid;grid-template-columns:1fr 1fr;gap:0}
 .halves>div{padding:0 7mm}.halves>div:first-child{padding-left:0;border-right:1.4px dashed #9FB3C4}.halves>div:last-child{padding-right:0}
 .rp{font-style:italic;font-weight:700;color:#0B7A72;font-size:16pt;margin:4px 0 2px}
-/* receta (diseño A · limpia y aireada) */
-.page.rx{padding:10mm 12mm 24mm}
-.page.rx .rxh{display:grid;grid-template-columns:1fr 1fr;height:100%;position:relative}
-.rxh>div{display:flex;flex-direction:column;min-height:0}.rxh>div:first-child{padding-right:8mm;border-right:1.2px dashed #B8C6CC}.rxh>div:last-child{padding-left:8mm}
-.rxt{display:flex;justify-content:space-between;align-items:flex-start;gap:6mm}
-.rxt img{height:12mm}.rxt .dr{text-align:right;font-size:8.4pt;line-height:1.35;color:#5B6B7A}.rxt .dr b{color:#12263A;font-size:9.6pt}
-.rxt2{display:flex;justify-content:space-between;align-items:center;margin-top:4mm;gap:5mm}
-.rxt2 h2{font-size:18pt;font-weight:700;margin:0;letter-spacing:-.2px;line-height:1.1}.rxt2 .sb{color:#0B7A72;font-size:9.4pt;margin-top:.6mm}
-.rxf{border:1.4px solid #0B7A72;border-radius:8px;padding:1.4mm 4mm;text-align:center;flex-shrink:0}
-.rxf small{display:block;font-size:6.2pt;font-weight:700;color:#0B7A72;letter-spacing:.14em}.rxf b{font-size:10.5pt;white-space:nowrap}.rxf i{display:block;font-style:normal;font-size:7pt;color:#5B6B7A}
-.rxp{display:grid;grid-template-columns:repeat(4,1fr);gap:2.2mm 4mm;background:#F3F7F7;border-radius:8px;padding:2.6mm 4mm;margin-top:4mm}
-.rxp.s{grid-template-columns:2fr 1fr 1fr;padding:2mm 4mm;margin-top:3.5mm}
-.rxp .w2{grid-column:span 2}.rxp .w3{grid-column:span 3}.rxp .w4{grid-column:1/-1}
-.rxp small{display:block;font-size:6.4pt;font-weight:700;color:#5B6B7A;letter-spacing:.12em;text-transform:uppercase}.rxp div>span{font-size:9.8pt;font-weight:700}
-.rxrp{font-style:italic;font-weight:700;color:#0B7A72;font-size:17pt;margin:3mm 0 0}
-.rxm{display:flex;gap:3mm;padding:1.8mm 0;border-bottom:1px solid #E3EAEC;align-items:flex-start}
-.rxm .n{color:#0B7A72;font-weight:700;font-size:10.5pt;width:6mm;flex-shrink:0}.rxm .x{flex:1;min-width:0}
-.rxm .x b{font-size:10.8pt}.rxm .g{color:#5B6B7A;font-weight:400}.rxm .x div{color:#5B6B7A;font-size:8.8pt}
-.rxm .q{text-align:right;font-size:10.5pt;font-weight:700;flex-shrink:0}.rxm .q div{font-weight:400;font-size:8.2pt;color:#5B6B7A}
-.rxi{padding:1.4mm 0;border-bottom:1px solid #E3EAEC}.rxi>b{font-size:10.3pt}.rxi .n{color:#0B7A72}.rxi .g{color:#5B6B7A;font-weight:400}
-.rxi .c{display:grid;grid-template-columns:1.05fr 1fr 2.4fr .7fr;gap:2.5mm;font-size:8.8pt;margin-top:.3mm;padding-left:5mm;line-height:1.25}.rxi .c b{color:#5B6B7A}
-.rxend{color:#5B6B7A;font-size:7.8pt;font-style:italic;margin-top:2mm}
-.rxb{margin-top:2.5mm;border-left:3px solid #0B7A72;background:#F3F7F7;border-radius:0 8px 8px 0;padding:2mm 3.5mm}
-.rxb small{display:block;font-size:6.8pt;font-weight:700;color:#0B7A72;letter-spacing:.12em}.rxb div{font-size:9pt;line-height:1.4;white-space:pre-wrap;margin-top:.4mm}
-.rxb.a{border-left-color:#B23A3A}.rxb.a small{color:#B23A3A}
-.rxc{font-size:8.8pt;margin-top:2.5mm}.rxc span{color:#0B7A72;font-weight:700}
-.rxs{margin-top:auto;padding-top:3mm}.rxs .who{font-size:8.2pt;color:#5B6B7A;line-height:1.4}.rxs .who b{font-size:9.8pt;color:#12263A}
-.rxs .who small{display:block;color:#0B7A72;font-weight:700;letter-spacing:.14em;font-size:6.4pt}.rxs .line{border-top:1px solid #12263A;width:62mm;margin-bottom:2px;margin-top:10mm}
-.page.rx .pf{padding:0 12mm 4mm}.page.rx .pf .tx{border-top:1px solid #DCE5E6;padding-top:1.6mm}.page.rx .pf .qr{width:14mm;height:14mm}
+/* receta (diseño B · vertical con línea de corte) */
+.page.rx{padding:10mm 15mm 23mm}
+.rxw{display:flex;flex-direction:column;height:100%}
+.rxw>section{flex:1 1 0;display:flex;flex-direction:column;min-height:0}
+.rxt{display:flex;align-items:center;gap:5mm;border-bottom:2px solid #0B7A72;padding-bottom:2.2mm}
+.rxt img{height:10.5mm}.rxt .tt{flex:1;min-width:0}.rxt .tt h2{font-size:16pt;font-weight:700;margin:0;line-height:1.1}.rxt .tt div{color:#0B7A72;font-size:9pt;white-space:nowrap}
+.rxt .dr{text-align:right;font-size:8pt;line-height:1.35;color:#5B6B7A}.rxt .dr b{color:#12263A;font-size:9pt}
+.rxf{background:#12263A;color:#fff;border-radius:7px;padding:1.4mm 3.5mm;text-align:center;flex-shrink:0}
+.rxf small{display:block;font-size:5.8pt;font-weight:700;color:#BDE8E3;letter-spacing:.14em}.rxf b{font-size:10pt;white-space:nowrap}.rxf i{display:block;font-style:normal;font-size:6.6pt;color:#BDE8E3}
+.rxp{display:flex;flex-wrap:wrap;gap:1.2mm 6mm;font-size:9.2pt;margin:2.4mm 0 1mm}.rxp small{font-size:6.4pt;font-weight:700;color:#5B6B7A;letter-spacing:.1em;text-transform:uppercase;margin-right:1mm}
+.rxrp{font-style:italic;font-weight:700;color:#0B7A72;font-size:15pt;margin:.5mm 0 0}
+table.rxtb{width:100%;border-collapse:collapse}
+.rxtb th{text-align:left;font-size:7.2pt;color:#5B6B7A;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:1.2mm 2mm;border-bottom:1.4px solid #12263A}
+.rxtb td{padding:1.6mm 2mm;border-bottom:1px solid #E3EAEC;font-size:9.4pt;vertical-align:top;line-height:1.25}
+.rxtb td.n{color:#0B7A72;font-weight:700}.rxtb .g{color:#5B6B7A}
+.rxend{color:#5B6B7A;font-size:7.6pt;font-style:italic;margin-top:1.4mm}
+.rxbx{display:grid;grid-template-columns:1.6fr 1fr;gap:4mm;margin-top:3mm}
+.rxb{background:#F3F7F7;border-radius:7px;padding:2.2mm 3.5mm}.rxb.a{background:#FBEEEE}
+.rxb small{display:block;font-size:6.6pt;font-weight:700;color:#0B7A72;letter-spacing:.12em}.rxb.a small{color:#B23A3A}.rxb div{font-size:9pt;line-height:1.38;white-space:pre-wrap;margin-top:.4mm}
+.rxc{font-size:8.8pt;margin-top:2.4mm}.rxc span{color:#0B7A72;font-weight:700}
+.rxs{margin-top:auto;padding-top:2mm;text-align:right}.rxs .who{font-size:7.8pt;color:#5B6B7A;line-height:1.35}.rxs .who b{font-size:9.4pt;color:#12263A}
+.rxs .who small{display:block;color:#0B7A72;font-weight:700;letter-spacing:.14em;font-size:6.2pt}.rxs .line{border-top:1px solid #12263A;width:62mm;margin:8mm 0 2px auto}
+.rxcut{position:relative;margin:5mm -15mm 4.5mm;border-top:1.4px dashed #9FB3C4;flex-shrink:0}
+.rxcut span{position:absolute;left:50%;top:-2.2mm;transform:translateX(-50%);background:#fff;padding:0 3mm;font-size:6.8pt;letter-spacing:.14em;color:#5B6B7A;white-space:nowrap}
+.page.rx .pf{padding:0 15mm 4mm}.page.rx .pf .tx{border-top:1px solid #DCE5E6;padding-top:1.6mm}.page.rx .pf .qr{width:13mm;height:13mm}
 .ie{font-family:Arial,Helvetica,sans-serif}.iep{font-size:10pt;line-height:1.5;text-align:justify;margin:0 0 4mm}.iel{margin:0 0 6mm 8mm;padding-left:4mm;font-size:10pt;line-height:1.5}.ied{font-size:10pt;font-weight:700;line-height:1.5}
 .blank{border-bottom:1px solid #C9D6DA;min-height:6mm;font-size:8.6pt;padding:1px 2px}
 
@@ -3417,29 +3413,29 @@ const ptable = (p, extra = []) => {
 };
 
 function renderRX(doc, mode) {
-  const c = chrome(doc, "l", true), s = DB.settings, d = doc.data, p = doc.patient, PER = 6;
+  const c = chrome(doc, "p", true), s = DB.settings, d = doc.data, p = doc.patient, PER = 6;
   const pages = []; for (let i = 0; i < Math.max(1, d.meds.length); i += PER) pages.push(d.meds.slice(i, i + PER));
-  const kv = (l, v, cl) => `<div${cl ? ` class="${cl}"` : ""}><small>${l}</small><span>${esc(v || "—")}</span></div>`;
+  const kv = (l, v) => v ? `<span><small>${l}</small><b>${esc(v)}</b></span>` : "";
   const edadP = p.edad || (p.nac ? edad(p.nac) + " años" : "");
-  const head = (t, sub, hoja) => `<div class="rxt"><img src="${LOGO}" alt="Signo"><div class="dr"><b>${esc(s.nombre)}</b><br>${esc(s.titulo)}<br>Reg. SENESCYT ${esc(s.senescyt)}</div></div>
-    <div class="rxt2"><div><h2>${t}</h2><div class="sb">${sub}</div></div><div class="rxf"><small>FOLIO</small><b>${doc.folio}</b><i>${hoja}</i></div></div>`;
-  const sig = () => mode === "m" ? `<div class="rxs"><div class="who"><div class="line"></div><b>${esc(s.nombre)}</b><br>Médico · C.I. ${fmtCed(s.ci)} · Reg. SENESCYT ${esc(s.senescyt)} · Firma y sello</div></div>`
-    : `<div class="rxs"><div class="who"><small>FIRMADO ELECTRÓNICAMENTE POR</small><b>${esc(s.nombre)}</b><br>Médico · C.I. ${fmtCed(s.ci)} · Reg. SENESCYT ${esc(s.senescyt)}</div></div>`;
-  const dx = [d.dx, d.cie ? "CIE-10 " + d.cie : ""].filter(Boolean).join(" · ");
-  const pfull = `<div class="rxp">${kv("Paciente", p.nombre, "w4")}${kv("Cédula", fmtCed(p.cedula))}${kv("Edad", edadP)}${kv("Sexo", p.sexo)}${kv("Fecha", fmt(doc.date))}${kv("Diagnóstico", dx, "w3")}${kv("Alergias", p.alergias || "No refiere")}</div>`;
-  const pshort = `<div class="rxp s">${kv("Paciente", p.nombre)}${kv("Cédula", fmtCed(p.cedula))}${kv("Fecha", fmt(doc.date))}</div>`;
-  const cell = (l, v) => v ? `<span><b>${l}</b> ${esc(v)}</span>` : "<span></span>";
+  const head = (t, sub, hoja) => `<div class="rxt"><img src="${LOGO}" alt="Signo"><div class="tt"><h2>${t}</h2><div>${sub}</div></div>
+    <div class="dr"><b>${esc(s.nombre)}</b><br>${esc(s.titulo)}<br>Reg. SENESCYT ${esc(s.senescyt)}</div><div class="rxf"><small>FOLIO</small><b>${doc.folio}</b>${pages.length > 1 ? `<i>${hoja}</i>` : ""}</div></div>`;
+  const sig = () => mode === "m" ? `<div class="rxs"><div class="who"><div class="line"></div><b>${esc(s.nombre)}</b><br>C.I. ${fmtCed(s.ci)} · Reg. SENESCYT ${esc(s.senescyt)} · Firma y sello</div></div>`
+    : `<div class="rxs"><div class="who"><small>FIRMADO ELECTRÓNICAMENTE POR</small><b>${esc(s.nombre)}</b><br>C.I. ${fmtCed(s.ci)} · Reg. SENESCYT ${esc(s.senescyt)}</div></div>`;
+  const dx = d.dx ? d.dx + (d.cie ? ` (${d.cie})` : "") : d.cie;
   return pages.map((meds, pi) => {
     const hoja = `Hoja ${pi + 1} de ${pages.length}`, off = pi * PER, last = pi === pages.length - 1;
-    const left = `${head("Receta médica", "Para la farmacia · Nombre genérico (DCI)", hoja)}${pfull}<div class="rxrp">Rp.</div>
-      ${meds.map((m, i) => `<div class="rxm"><div class="n">${off + i + 1}.</div><div class="x"><b>${esc(m.dci)}</b> <b class="g">${esc(m.conc)}</b>${m.forma ? `<div>${esc(m.forma)}</div>` : ""}</div><div class="q">${esc(m.cant)}${m.letras ? `<div>(${esc(m.letras)})</div>` : ""}</div></div>`).join("")}
-      <div class="rxend">${last ? "Fin de la prescripción · " : "Continúa en la siguiente hoja · "}Válida por ${esc(s.validezRx)} días desde su emisión · Sin enmendaduras</div>${sig()}`;
-    const right = `${head("Indicaciones", "Para el paciente · Cómo usar su medicación", hoja)}${pshort}<div style="margin-top:1.5mm">
-      ${meds.map((m, i) => `<div class="rxi"><b><span class="n">${off + i + 1}.</span> ${esc(m.dci)} <span class="g">${esc(m.conc)}</span></b><div class="c">${cell("Dosis", m.dosis)}${cell("Vía", m.via)}${cell("Frecuencia", m.frec)}${cell("Por", m.dur)}</div></div>`).join("")}</div>
-      ${last ? `${d.recom ? `<div class="rxb"><small>RECOMENDACIONES</small><div>${esc(d.recom)}</div></div>` : ""}
-      ${d.alarma ? `<div class="rxb a"><small>ACUDA DE INMEDIATO SI PRESENTA</small><div>${esc(d.alarma)}</div></div>` : ""}
-      <div class="rxc"><b>Próximo control:</b> ${d.control ? fmt(d.control) : "____ / ____ / ______"} &nbsp;·&nbsp; <span>Citas y dudas: WhatsApp ${esc(s.tel)}</span></div>` : ""}${sig()}`;
-    return `<div class="page a4l rx"><div class="z rxh"><div>${left}</div><div>${right}</div></div>${c.foot}</div>`;
+    const top = `<section>${head("Receta médica", "Para la farmacia · Nombre genérico (DCI)", hoja)}
+      <div class="rxp">${kv("Paciente", p.nombre)}${kv("Cédula", fmtCed(p.cedula))}${kv("Edad", edadP)}${kv("Sexo", p.sexo)}${kv("Fecha", fmt(doc.date))}${kv("Dx", dx)}${kv("Alergias", p.alergias || "No refiere")}</div>
+      <div class="rxrp">Rp.</div><table class="rxtb"><tr><th style="width:5%">#</th><th style="width:40%">Medicamento (DCI)</th><th style="width:16%">Concentración</th><th style="width:22%">Forma farmacéutica</th><th>Cantidad</th></tr>
+      ${meds.map((m, i) => `<tr><td class="n">${off + i + 1}</td><td><b>${esc(m.dci)}</b></td><td>${esc(m.conc)}</td><td>${esc(m.forma)}</td><td><b>${esc(m.cant)}</b>${m.letras ? ` <span class="g">(${esc(m.letras)})</span>` : ""}</td></tr>`).join("")}</table>
+      <div class="rxend">${last ? "Fin de la prescripción" : "Continúa en la siguiente hoja"} · Válida por ${esc(s.validezRx)} días desde su emisión · Sin enmendaduras</div>${sig()}</section>`;
+    const bottom = `<section>${head("Indicaciones", "Para el paciente · Cómo usar su medicación", hoja)}
+      <div class="rxp">${kv("Paciente", p.nombre)}${kv("Fecha", fmt(doc.date))}</div>
+      <table class="rxtb"><tr><th style="width:5%">#</th><th style="width:30%">Medicamento</th><th style="width:13%">Dosis</th><th style="width:13%">Vía</th><th style="width:27%">Frecuencia</th><th>Duración</th></tr>
+      ${meds.map((m, i) => `<tr><td class="n">${off + i + 1}</td><td><b>${esc(m.dci)}</b> <span class="g">${esc(m.conc)}</span></td><td>${esc(m.dosis)}</td><td>${esc(m.via)}</td><td>${esc(m.frec)}</td><td>${esc(m.dur)}</td></tr>`).join("")}</table>
+      ${last ? `${d.recom || d.alarma ? `<div class="rxbx" ${!d.recom || !d.alarma ? 'style="grid-template-columns:1fr"' : ""}>${d.recom ? `<div class="rxb"><small>RECOMENDACIONES</small><div>${esc(d.recom)}</div></div>` : ""}${d.alarma ? `<div class="rxb a"><small>ACUDA DE INMEDIATO SI PRESENTA</small><div>${esc(d.alarma)}</div></div>` : ""}</div>` : ""}
+      <div class="rxc"><b>Próximo control:</b> ${d.control ? fmt(d.control) : "____ / ____ / ______"} &nbsp;·&nbsp; <span>Citas y dudas: WhatsApp ${esc(s.tel)}</span></div>` : ""}</section>`;
+    return `<div class="page a4p rx"><div class="z rxw">${top}<div class="rxcut"><span>✂ CORTAR AQUÍ · PARA EL PACIENTE</span></div>${bottom}</div>${c.foot}</div>`;
   }).join("");
 }
 
@@ -3576,7 +3572,7 @@ $("#doprint").onclick = () => {
     return;
   }
   if (!CUR) return;
-  $("#pagecss").textContent = `@page{size:A4 ${CUR.type === "RX" && !WEBKIT_PRINT ? "landscape" : "portrait"};margin:0}`;
+  $("#pagecss").textContent = "@page{size:A4 portrait;margin:0}";
   $("#print").innerHTML = renderDoc(CUR, $("#sigmode").value);
   wkWrap($("#print"));
   const old = document.title; document.title = `${CUR.folio}_${CUR.patient.nombre.replace(/\s+/g, "_")}`;
