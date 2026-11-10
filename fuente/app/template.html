@@ -197,6 +197,22 @@ table.rxtb{width:100%;border-collapse:collapse}
 .blank{border-bottom:1px solid #C9D6DA;min-height:6mm;font-size:8.6pt;padding:1px 2px}
 
 #print{display:none}
+/* bloqueo con contraseña */
+#lock{position:fixed;inset:0;z-index:200;background:var(--navy);display:none;overflow:auto;padding:24px 16px}
+body.locked #lock{display:flex}
+body.locked>*:not(#lock){visibility:hidden!important}
+#lock .lk,.pindlg .lk{background:#fff;border-radius:16px;max-width:460px;width:100%;margin:auto;padding:22px 22px 18px;box-shadow:0 20px 60px #0006;display:flex;flex-direction:column;gap:10px}
+.lk h2{margin:0;font-size:20px;color:var(--navy)}.lk p{margin:0;color:var(--grey);font-size:14px;line-height:1.45}
+.lklogo{width:180px;max-width:70%;align-self:center;margin-bottom:4px}
+.lk input.pin{font-size:18px;min-height:50px;flex:1;min-width:0}.pwrap{display:flex;gap:8px;align-items:stretch}.pwrap .pweye{min-width:86px}
+.lkrules{margin:0;padding-left:20px;font-size:14px;color:var(--navy);line-height:1.5}
+.lkwarn{background:#fbeae4;border:2px solid var(--warn);color:#7a2c10;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
+.lk p.lkok{background:#dff3ef;color:var(--teal);border-radius:10px;padding:8px 12px}
+.lkios{background:#fff8d6;border:1px solid #ecd98a;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45}
+.lkchk{font-size:14px}.lkerr{color:var(--warn);font-weight:700;font-size:14px}
+.lkbtn{width:100%;font-size:16px;min-height:50px}.lklink{background:none;border:0;color:var(--teal);text-decoration:underline;cursor:pointer;padding:6px;font-size:13px}
+.pindlg{position:fixed;inset:0;z-index:150;background:#12263Acc;display:flex;overflow:auto;padding:24px 16px}
+nav #lockbtn{border:1px solid #2c4a66}
 @media print{
   body{background:#fff}
   .app,.modal,.toast,.sendlg,.ciebox{display:none!important}
@@ -215,7 +231,8 @@ table.rxtb{width:100%;border-collapse:collapse}
 </style>
 <style id="pagecss">@page{size:A4 portrait;margin:0}</style>
 </head>
-<body>
+<body class="locked">
+<div id="lock"></div>
 <div class="app">
   <nav>
     <div class="brand"><img src="__LOGO__" alt="Signo Medicina Integral"></div>
@@ -230,9 +247,10 @@ table.rxtb{width:100%;border-collapse:collapse}
     <button data-v="registro">Registro de folios</button>
     <button data-v="pacientes">Pacientes</button>
     <button data-v="ajustes">Ajustes y respaldo</button>
-    <div class="foot">Los datos se guardan solo en este equipo y navegador. Haz un respaldo cada semana en «Ajustes y respaldo».</div>
+    <button id="lockbtn" title="Bloquear la app (pide la contraseña para volver a entrar)">🔒 Bloquear</button>
+    <div class="foot">Los datos se guardan cifrados con tu contraseña, solo en este equipo y navegador. Se bloquea sola tras 10 minutos sin uso. Haz un respaldo cada semana en «Ajustes y respaldo».</div>
   </nav>
-  <main id="main"></main>
+  <main><div id="warns"></div><div id="main"></div></main>
 </div>
 <div class="modal" id="modal"><div class="box">
   <div class="bar">
@@ -268,18 +286,19 @@ const DEF = {
   counters: { RX: { year: 2026, next: 51 }, SM: { year: 2026, next: 2 }, CM: { year: 2026, next: 1 }, IE: { year: 2026, next: 1 }, OL: { year: 2026, next: 1 } }, patients: {}, docs: [], lastBackup: null,
 };
 let DB;
-function load() {
-  try { DB = JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { DB = null; }
+// los datos ya no se leen en claro de localStorage: llegan descifrados (o de un respaldo) a load(obj). Ver seguridad.js
+function load(src) {
+  DB = src && typeof src === "object" ? src : null;
   if (!DB) DB = JSON.parse(JSON.stringify(DEF));
   DB.settings = Object.assign({}, DEF.settings, DB.settings || {});
   ["acess", "tit4", "reg4"].forEach((k) => { if (!DB.settings[k]) DB.settings[k] = DEF.settings[k]; });
   DB.counters = DB.counters || {}; DB.patients = DB.patients || {}; DB.docs = DB.docs || []; DB.atenciones = DB.atenciones || []; DB.ocup = DB.ocup || []; DB.empresas = DB.empresas || {};
 }
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(DB)); return true; }
+  try { secSave(JSON.stringify(DB)); return true; } // se guarda cifrado
   catch (e) { toast("No se pudo guardar en este navegador. Descarga un respaldo ahora."); return false; }
 }
-load();
+load(null);
 
 /* ---------- helpers ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -564,6 +583,7 @@ V.registro = () => {
   };
   $("#q").oninput = draw; $("#ft").onchange = draw; draw();
   $("#csv").onclick = () => {
+    if (!plainOk("El archivo CSV del registro")) return;
     const rows = [["Folio", "Fecha", "Tipo", "Paciente", "Cédula", "Diagnóstico", "CIE-10", "Estado"]].concat(DB.docs.map((d) => [d.folio, fmt(d.date), d.type === "CM" ? d.data.tipo : TYPES[d.type], d.patient.nombre, fmtCed(d.patient.cedula), d.data.dx || "", d.data.cie || "", d.status]));
     download("﻿" + rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\r\n"), `Registro_folios_Signo_${today()}.csv`, "text/csv");
   };
@@ -589,13 +609,16 @@ V.ajustes = () => {
   const s = DB.settings;
   const C = Object.keys(TYPES).map((k) => `<label>Próximo folio ${k}<input type="number" min="1" data-c="${k}" value="${(DB.counters[k] && DB.counters[k].year === new Date().getFullYear()) ? DB.counters[k].next : 1}"></label>`).join("");
   $("#main").innerHTML = `<h1>Ajustes y respaldo</h1><p class="sub">Tus datos profesionales, la numeración de folios y las copias de seguridad.</p>
-  ${!DB.lastBackup || (Date.now() - DB.lastBackup) > 7 * 864e5 ? `<div class="banner"><b>Haz un respaldo.</b> Si se borran los datos del navegador, se pierden pacientes y registro. ${DB.lastBackup ? "Último respaldo: " + new Date(DB.lastBackup).toLocaleDateString("es-EC") : "Aún no has hecho ninguno."}</div>` : ""}
+  <div class="card"><h2>Seguridad</h2><div class="row">
+    <button class="btn s" id="lk2">🔒 Bloquear ahora</button>
+    <button class="btn s" id="chpin">Cambiar contraseña</button>
+    <span class="hint">Los datos están cifrados con tu contraseña y la app se bloquea sola tras 10 minutos sin uso. <b class="warnt">Si olvidas la contraseña, los datos no se recuperan.</b></span></div></div>
   <div class="card"><h2>Respaldo</h2><div class="row">
     <button class="btn p" id="bk">Descargar respaldo</button>
     <button class="btn s" id="xl">Descargar base de datos (Excel)</button>
     <label class="btn s" style="flex-direction:row;cursor:pointer">Restaurar respaldo<input type="file" id="rs" accept=".json" style="display:none"></label>
     <label class="btn s" style="flex-direction:row;cursor:pointer">Combinar respaldo<input type="file" id="mg" accept=".json" style="display:none"></label>
-    <span class="hint">Guarda el archivo de respaldo en una carpeta segura o en la nube. Restaurar reemplaza los datos actuales.</span></div></div>
+    <span class="hint">El respaldo sale <b>cifrado con tu contraseña actual</b>: para restaurarlo hará falta esa contraseña. Guárdalo en una carpeta segura o en la nube. Restaurar reemplaza los datos actuales; también acepta respaldos antiguos sin cifrar. El Excel sale <b>sin protección</b>.</span></div></div>
   <form class="card" id="f"><h2>Datos del médico</h2><div class="grid">
     <label class="span2">Nombre completo<input name="nombre" value="${esc(s.nombre)}"></label><label class="span2">Título<input name="titulo" value="${esc(s.titulo)}"></label>
     <label>Cédula<input name="ci" value="${esc(s.ci)}"></label><label>Registro SENESCYT<input name="senescyt" value="${esc(s.senescyt)}"></label>
@@ -618,17 +641,23 @@ V.ajustes = () => {
     $$("[data-c]", f).forEach((i) => { DB.counters[i.dataset.c] = { year: new Date().getFullYear(), next: Math.max(1, parseInt(i.value, 10) || 1) }; });
     save(); toast("Ajustes guardados.");
   };
-  $("#xl").onclick = () => { exportExcel(); toast("Base de datos descargada en Excel."); };
-  $("#bk").onclick = () => { DB.lastBackup = Date.now(); save(); download(JSON.stringify(DB, null, 1), `Respaldo_Signo_${today()}.json`, "application/json"); V.ajustes(); };
-  $("#mg").onchange = (e) => {
-    const file = e.target.files[0]; if (!file) return; const r = new FileReader();
-    r.onload = () => { try { const d = JSON.parse(r.result); if (!d.docs || !d.settings) throw 0; const n = mergeDB(d); toast(`Combinado: ${n.p} pacientes, ${n.d} documentos, ${n.a} atenciones${n.o ? " y " + n.o + " evaluaciones ocupacionales" : ""} nuevos o actualizados.`); V.ajustes(); } catch (x) { toast("Ese archivo no es un respaldo válido de Signo."); } };
-    r.readAsText(file);
+  $("#xl").onclick = () => { if (!plainOk("El Excel")) return; exportExcel(); toast("Base de datos descargada en Excel (sin protección: guárdala en lugar seguro)."); };
+  $("#bk").onclick = () => doBackup();
+  $("#lk2").onclick = () => lockApp();
+  $("#chpin").onclick = () => changePin();
+  // respaldos: aceptan los nuevos cifrados (pide la contraseña si no es la actual) y los antiguos sin cifrar
+  $("#mg").onchange = async (e) => {
+    const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+    const d = await readBackupFile(file); if (!d) return;
+    if (!d.docs || !d.settings) return toast("Ese archivo no es un respaldo válido de Signo.");
+    const n = mergeDB(d); toast(`Combinado: ${n.p} pacientes, ${n.d} documentos, ${n.a} atenciones${n.o ? " y " + n.o + " evaluaciones ocupacionales" : ""} nuevos o actualizados.`); V.ajustes(); drawWarns();
   };
-  $("#rs").onchange = (e) => {
-    const file = e.target.files[0]; if (!file) return; const r = new FileReader();
-    r.onload = () => { try { const d = JSON.parse(r.result); if (!d.docs || !d.settings) throw 0; if (!confirm(`Restaurar ${d.docs.length} documentos y ${Object.keys(d.patients || {}).length} pacientes? Se reemplazan los datos actuales.`)) return; localStorage.setItem(KEY, JSON.stringify(d)); load(); toast("Respaldo restaurado."); V.ajustes(); } catch (x) { toast("Ese archivo no es un respaldo válido de Signo."); } };
-    r.readAsText(file);
+  $("#rs").onchange = async (e) => {
+    const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+    const d = await readBackupFile(file); if (!d) return;
+    if (!d.docs || !d.settings) return toast("Ese archivo no es un respaldo válido de Signo.");
+    if (!confirm(`Restaurar ${d.docs.length} documentos y ${Object.keys(d.patients || {}).length} pacientes? Se reemplazan los datos actuales.`)) return;
+    load(d); save(); toast("Respaldo restaurado y guardado cifrado con tu contraseña actual."); V.ajustes(); drawWarns();
   };
 };
 
@@ -831,10 +860,12 @@ __SIVEJS__
 __GROWTHJS__
 __ATENCION__
 __OCUJS__
+__SEGJS__
 /* ---------- navigation ---------- */
-function go(v) { $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.v === v)); V[v](); window.scrollTo(0, 0); }
-$$("nav button").forEach((b) => (b.onclick = () => go(b.dataset.v)));
-go("atencion");
+function go(v) { $$("nav button[data-v]").forEach((b) => b.classList.toggle("on", b.dataset.v === v)); V[v](); drawWarns(); window.scrollTo(0, 0); }
+$$("nav button[data-v]").forEach((b) => (b.onclick = () => go(b.dataset.v)));
+$("#lockbtn").onclick = () => lockApp();
+secStart(); // pide crear o escribir la contraseña; al desbloquear abre «Atención»
 </script>
 </body>
 </html>

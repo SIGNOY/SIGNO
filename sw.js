@@ -1,5 +1,5 @@
-// Signo Consultorio · funciona sin internet. Versión 30d851e550
-const CACHE = "signo-d906ec247c";
+// Signo Consultorio · funciona sin internet. Versión 5e9c1a7b20
+const CACHE = "signo-5e9c1a7b20";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES))); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
