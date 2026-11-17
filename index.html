@@ -3037,7 +3037,7 @@ const TYPES = { RX: "Receta médica", SM: "Certificado de salud mental", IE: "Ce
 const DEF = {
   settings: { nombre: "Dr. Yassir Josué Dumani Manzano", titulo: "Médico · Magíster en Prevención de Riesgos Laborales",
     ci: "0955259585", senescyt: "1006-2021-2377353", acess: "0955259585", tit4: "Máster en Prevención de Riesgos Laborales", reg4: "7241225693", dir: "Life Town, Torre 1, Av. León Febres Cordero, La Aurora, Guayaquil",
-    tel: "096 841 8680", wa: "593968418680", email: "yassirjosue@live.com", ciudad: "Guayaquil", validezRx: 30,
+    tel: "096 841 8680", wa: "593968418680", email: "administracion@signomedico.es", ciudad: "Guayaquil", validezRx: 30,
     inst: "RED PRIVADA", estProv: "GUAYAS", estCanton: "DAULE", estParroq: "LA AURORA (SATÉLITE)", unicodigo: "", estab: "SIGNO · MEDICINA INTEGRAL", tipologia: "CONSULTORIO", pn1: "YASSIR", pa1: "DUMANI", pa2: "MANZANO" },
   counters: { RX: { year: 2026, next: 51 }, SM: { year: 2026, next: 2 }, CM: { year: 2026, next: 1 }, IE: { year: 2026, next: 1 }, OL: { year: 2026, next: 1 } }, patients: {}, docs: [], lastBackup: null,
 };
@@ -3051,6 +3051,7 @@ function load(src) {
   // nov. 2026: Signo pasa al número de WhatsApp Business (si aún tenía el número anterior)
   if (DB.settings.tel === "099 379 4058") DB.settings.tel = DEF.settings.tel;
   if (DB.settings.wa === "593993794058") DB.settings.wa = DEF.settings.wa;
+  if (DB.settings.email === "yassirjosue@live.com") DB.settings.email = DEF.settings.email; // correo institucional de Signo
   DB.counters = DB.counters || {}; DB.patients = DB.patients || {}; DB.docs = DB.docs || []; DB.atenciones = DB.atenciones || []; DB.ocup = DB.ocup || []; DB.empresas = DB.empresas || {};
 }
 function save() {
