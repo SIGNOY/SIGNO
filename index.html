@@ -3634,6 +3634,43 @@ function miniChart(title, unit, series, dates) {
   });
   return `<svg viewBox="0 0 ${W} ${H}" class="mchart" role="img" aria-label="${esc(title)}">${g}</svg>`;
 }
+/* ---------- Código anónimo del paciente y resumen para analizar el caso con Claude ---------- */
+function pCode(ced) {
+  const p = DB.patients[ced]; if (!p) return "";
+  if (!p.code) { DB.counters.pac = (DB.counters.pac || 0) + 1; p.code = "SIG-P-" + String(DB.counters.pac).padStart(4, "0"); save(); }
+  return p.code;
+}
+function resumenClaude(ced) {
+  const p = DB.patients[ced], { A, D } = historial(ced), code = pCode(ced);
+  const words = [p.cedula, fmtCed(p.cedula), ...String(p.nombre || "").split(/\s+/).filter((w) => w.length >= 3)].filter(Boolean);
+  const anon = (t) => { let x = String(t || ""); words.forEach((w) => { x = x.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "[paciente]"); }); return x.replace(/\[paciente\](\s+\[paciente\])+/g, "[paciente]").trim(); };
+  const vit = (v) => [["PA", v.pa, " mmHg"], ["FC", v.fc, " lpm"], ["FR", v.fr, " rpm"], ["T", v.t, " °C"], ["SatO2", v.sat, " %"], ["Peso", v.peso, " kg"], ["Talla", v.talla, " cm"], ["IMC", v.imc, ""], ["Glucosa", v.glu, " mg/dl"], ["Hb", v.hb, " g/dl"]].filter((x) => x[1]).map((x) => `${x[0]} ${x[1]}${x[2]}`).join(", ");
+  const L = [`CASO ${code}`, `Edad: ${p.nac ? edad(p.nac) + " años" : "—"} · Sexo: ${p.sexo || "—"}${p.ocupacion ? " · Ocupación: " + anon(p.ocupacion) : ""}`, `Alergias: ${anon(p.alergias) || "No registradas"}`];
+  const a0 = A.find((a) => a.antp || a.antf);
+  if (a0 && a0.antp) L.push(`Antecedentes personales: ${anon(a0.antp)}`);
+  if (a0 && a0.antf) L.push(`Antecedentes familiares: ${anon(a0.antf)}`);
+  const rx = D.filter((d) => d.type === "RX" && d.status !== "Anulada").sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, 2);
+  rx.forEach((d) => L.push(`Receta del ${fmt(d.date)}: ${(d.data.meds || []).map((m) => [m.dci, m.conc, m.dosis, m.via, m.frec, m.dur].filter(Boolean).join(" ")).join("; ")}`));
+  A.slice(0, 3).forEach((a, i) => {
+    L.push("", `${i === 0 ? "ÚLTIMA ATENCIÓN" : "ATENCIÓN PREVIA"} (${fmt(a.fecha)})`);
+    [["Motivo", a.motivo], ["Enfermedad actual", a.enf], ["Revisión por sistemas", a.rev], ["Examen físico", a.exf], ["Hallazgos / exámenes", a.hall], ["Plan", a.plan]].forEach(([k, v]) => { if (v) L.push(`${k}: ${anon(v)}`); });
+    if (a.vit && vit(a.vit)) L.push(`Signos vitales: ${vit(a.vit)}`);
+    if ((a.dx || []).length) L.push(`Diagnósticos: ${a.dx.map((d) => d.d + (d.cie ? " (" + d.cie + ")" : "") + (d.t ? " " + d.t : "")).join("; ")}`);
+  });
+  if (!A.length) L.push("", "Sin atenciones registradas.");
+  L.push("", "Pregunta: ");
+  return L.join("\n");
+}
+function resumenDialog(ced) {
+  const box = $("#senddlg"), txt = resumenClaude(ced);
+  box.innerHTML = `<div class="sdbox" style="max-width:720px;width:100%"><b>Resumen anónimo para Claude · ${esc(pCode(ced))}</b>
+    <p class="hint">Sin nombre ni cédula. Revísalo antes de copiarlo (quita cualquier dato que identifique al paciente) y escribe tu pregunta al final. Para analizarlo, pégalo en tu proyecto de Claude.</p>
+    <textarea id="rcx" style="width:100%;min-height:340px;font-family:inherit;font-size:13px">${esc(txt)}</textarea>
+    <div class="row" style="margin-top:10px"><button class="btn p sm" id="rcc">Copiar</button><button class="btn s sm" id="rcz">Cerrar</button></div></div>`;
+  box.style.display = "flex";
+  $("#rcz").onclick = () => (box.style.display = "none");
+  $("#rcc").onclick = async () => { const t = $("#rcx").value; try { await navigator.clipboard.writeText(t); } catch (e) { $("#rcx").select(); document.execCommand("copy"); } toast("Resumen copiado. Pégalo en tu proyecto de Claude."); };
+}
 V.ficha = (ced) => {
   const p = DB.patients[ced]; if (!p) return go("pacientes");
   const { A, D } = historial(ced), s = p.ap1 ? p : Object.assign({}, p, splitName(p.nombre));
@@ -3658,8 +3695,8 @@ V.ficha = (ced) => {
   const docName = (d) => (d.type === "CM" ? d.data.tipo : TYPES[d.type]);
   const docDet = (d) => d.type === "RX" ? (d.data.meds || []).map((m) => `${m.dci}${m.conc ? " " + m.conc : ""}`).join(", ") : d.type === "OL" ? (d.data.ex || []).slice(0, 8).join(", ") + ((d.data.ex || []).length > 8 ? "…" : "") : d.data.dx || "";
   $("#main").innerHTML = `<div class="row" style="justify-content:space-between;align-items:flex-start">
-      <div><h1>${esc(p.nombre)}</h1><p class="sub" style="margin-bottom:10px">C.I. ${fmtCed(p.cedula)} · ${p.nac ? edad(p.nac) + " años · " : ""}${esc(p.sexo || "")}${p.tel ? " · " + esc(p.tel) : ""}${p.email ? " · " + esc(p.email) : ""}</p></div>
-      <div class="row"><button class="btn p" id="fnew">Nueva atención</button><button class="btn s" data-q="receta">Receta</button><button class="btn s" data-q="lab">Orden de exámenes</button><button class="btn s" data-q="general">Certificado</button></div></div>
+      <div><h1>${esc(p.nombre)}</h1><p class="sub" style="margin-bottom:10px"><span class="tag" title="Código anónimo para consultar casos">${esc(pCode(ced))}</span> · C.I. ${fmtCed(p.cedula)} · ${p.nac ? edad(p.nac) + " años · " : ""}${esc(p.sexo || "")}${p.tel ? " · " + esc(p.tel) : ""}${p.email ? " · " + esc(p.email) : ""}</p></div>
+      <div class="row"><button class="btn p" id="fnew">Nueva atención</button><button class="btn s" data-q="receta">Receta</button><button class="btn s" data-q="lab">Orden de exámenes</button><button class="btn s" data-q="general">Certificado</button><button class="btn s" id="frc">Resumen para Claude</button></div></div>
     <div class="fgrid">
       <div class="card"><h2>Resumen</h2>
         <p><b>${A.length}</b> atención(es) · <b>${D.filter((d) => d.status === "Emitida").length}</b> documento(s)${A[0] ? ` · última consulta <b>${fmt(A[0].fecha)}</b>` : ""}${A.length > 1 ? ` · primera <b>${fmt(A[A.length - 1].fecha)}</b>` : ""}</p>
@@ -3683,6 +3720,7 @@ V.ficha = (ced) => {
   $$("[data-v]", $("#main")).forEach((b) => (b.onclick = () => openDoc(DB.docs.find((d) => d.folio === b.dataset.v))));
   $$("[data-oo]").forEach((b) => (b.onclick = () => { go("ocupacional"); V.ocupacional(JSON.parse(JSON.stringify(DB.ocup.find((x) => x.id === b.dataset.oo)))); window.scrollTo(0, 0); }));
   $$("[data-od]").forEach((b) => (b.onclick = () => { const x = DB.ocup.find((y) => y.id === b.dataset.od); openForms(ocCodes(x), x); }));
+  $("#frc").onclick = () => resumenDialog(ced);
   $("#fnew").onclick = () => { go("atencion"); const f = $("#fa"); f.cedula.value = ced; f.cedula.dispatchEvent(new Event("change")); };
   $$("[data-q]").forEach((b) => (b.onclick = () => { go(b.dataset.q); const f = $("#f"); if (f && f.cedula) { f.cedula.value = ced; f.cedula.dispatchEvent(new Event("change")); } }));
 };
