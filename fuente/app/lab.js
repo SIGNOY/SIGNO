@@ -1,17 +1,4 @@
 /* ---------- Órdenes de exámenes de laboratorio (folio SIG-OL) ---------- */
-const LAB_CAT = [
-  ["Hematología", ["Biometría hemática completa", "Hemoglobina y hematocrito", "Plaquetas", "Reticulocitos", "Velocidad de sedimentación globular (VSG)", "Frotis de sangre periférica", "Grupo sanguíneo y factor Rh", "Ferritina", "Hierro sérico", "Transferrina / % saturación"]],
-  ["Coagulación", ["Tiempo de protrombina (TP) e INR", "Tiempo de tromboplastina parcial (TTP)", "Fibrinógeno", "Dímero D"]],
-  ["Química sanguínea", ["Glucosa en ayunas", "Glucosa postprandial (2 horas)", "Curva de tolerancia a la glucosa (75 g)", "Hemoglobina glicosilada (HbA1c)", "Urea / BUN", "Creatinina", "Ácido úrico", "Colesterol total", "HDL colesterol", "LDL colesterol", "Triglicéridos", "TGO (AST)", "TGP (ALT)", "Gamma GT", "Fosfatasa alcalina", "Bilirrubinas (total, directa e indirecta)", "Proteínas totales y albúmina", "Amilasa", "Lipasa", "LDH", "CPK total", "CK-MB", "Troponina", "Sodio, potasio y cloro (electrolitos)", "Calcio", "Magnesio", "Fósforo", "PCR cuantitativa", "Procalcitonina", "Vitamina D (25-OH)", "Vitamina B12", "Ácido fólico"]],
-  ["Hormonas", ["TSH", "T4 libre", "T3", "Prueba de embarazo en sangre (β-HCG cuantitativa)", "Insulina basal", "Prolactina", "FSH", "LH", "Estradiol", "Progesterona", "Testosterona total", "Cortisol", "PSA total", "PSA libre"]],
-  ["Inmunología y serología", ["VIH 1 y 2 (prueba de 4.ª generación)", "VDRL / RPR", "Hepatitis B (HBsAg)", "Anti-HBs", "Hepatitis C (anti-HCV)", "Hepatitis A (IgM)", "Toxoplasma IgG e IgM", "Rubéola IgG e IgM", "Citomegalovirus IgG e IgM", "Dengue NS1", "Dengue IgG e IgM", "Factor reumatoideo", "Antiestreptolisinas (ASTO)", "Anticuerpos antinucleares (ANA)", "Reacciones febriles (Widal, Huddleson, Weil-Felix)", "Helicobacter pylori (antígeno en heces)", "Helicobacter pylori IgG", "SARS-CoV-2 (antígeno)"]],
-  ["Orina", ["Examen elemental y microscópico de orina (EMO)", "Urocultivo y antibiograma", "Prueba de embarazo en orina", "Microalbuminuria", "Depuración de creatinina en orina de 24 horas", "Proteinuria en orina de 24 horas"]],
-  ["Heces", ["Coproparasitario", "Coproparasitario seriado (3 muestras)", "Sangre oculta en heces", "Coprocultivo", "Rotavirus / adenovirus"]],
-  ["Microbiología", ["Cultivo y antibiograma de secreción", "Hisopado faríngeo (cultivo)", "Baciloscopía (BK) en esputo", "Gram y fresco de secreción vaginal", "KOH (hongos)"]],
-  ["Toxicología y ocupacional", ["Colinesterasa", "Plomo en sangre", "Drogas de abuso en orina (panel)", "Alcohol en sangre"]],
-  ["Imagenología", ["Rayos X de tórax (PA)", "Rayos X de tórax (PA y lateral)", "Rayos X de columna cervical", "Rayos X de columna lumbosacra", "Rayos X de rodilla", "Rayos X de hombro", "Rayos X de mano", "Rayos X de senos paranasales", "Ecografía abdominal", "Ecografía renal y de vías urinarias", "Ecografía pélvica", "Ecografía obstétrica", "Ecografía tiroidea", "Ecografía mamaria", "Ecografía prostática", "Ecografía de partes blandas", "Mamografía", "Tomografía (especificar región)"]],
-  ["Otros estudios", ["Electrocardiograma", "Espirometría", "Audiometría", "Optometría / agudeza visual"]],
-];
 // exámenes escritos a mano que en realidad son de imagen u otros estudios
 const IMG_RE = /rayos|^rx\b|\brx\b|radiograf|ecograf|ecosonograf|ultrason|tomograf|\btac\b|resonancia|mamograf|densitometr|doppler/i;
 const EST_RE = /electrocardiograma|\becg\b|\bekg\b|espirometr|audiometr|optometr|agudeza visual|holter|ecocardiograma|prueba de esfuerzo/i;
@@ -37,33 +24,15 @@ const LAB_PERF = {
   "Diabetes (control)": ["Glucosa en ayunas", "Hemoglobina glicosilada (HbA1c)", "Creatinina", "Microalbuminuria", "Colesterol total", "Triglicéridos"],
   "Control prenatal": ["Biometría hemática completa", "Grupo sanguíneo y factor Rh", "Glucosa en ayunas", "VDRL / RPR", "VIH 1 y 2 (prueba de 4.ª generación)", "Hepatitis B (HBsAg)", "Toxoplasma IgG e IgM", "Rubéola IgG e IgM", "Examen elemental y microscópico de orina (EMO)", "Urocultivo y antibiograma"],
   "Síndrome febril": ["Biometría hemática completa", "PCR cuantitativa", "Dengue NS1", "Dengue IgG e IgM", "Reacciones febriles (Widal, Huddleson, Weil-Felix)", "Examen elemental y microscópico de orina (EMO)"],
+  "Preoperatorio": ["Biometría hemática completa", "Tiempo de protrombina (TP) e INR", "Tiempo de tromboplastina parcial (TTP)", "Glucosa en ayunas", "Urea / BUN", "Creatinina", "Sodio, potasio y cloro (electrolitos)", "Grupo sanguíneo y factor Rh", "Examen elemental y microscópico de orina (EMO)"],
+  "Anemia": ["Biometría hemática completa", "Reticulocitos", "Frotis de sangre periférica", "Ferritina", "Hierro sérico", "Transferrina / % saturación", "Vitamina B12", "Ácido fólico sérico"],
+  "Reumatológico": ["Velocidad de sedimentación globular (VSG)", "PCR cuantitativa", "Factor reumatoideo", "Anti-CCP (péptido citrulinado)", "Anticuerpos antinucleares (ANA)", "Ácido úrico", "Complemento C3", "Complemento C4"],
+  "Suprarrenal": ["Cortisol (7 a 9 a. m.)", "ACTH", "Sodio, potasio y cloro (electrolitos)", "Glucosa en ayunas"],
+  "Hepatitis virales": ["Hepatitis A (IgM)", "Hepatitis B (HBsAg)", "Anti-HBc total", "Anti-HBs", "Hepatitis C (anti-HCV)"],
+  "Próstata": ["PSA total", "PSA libre", "Examen elemental y microscópico de orina (EMO)", "Ecografía prostática"],
   "Infección urinaria": ["Examen elemental y microscópico de orina (EMO)", "Urocultivo y antibiograma", "Biometría hemática completa", "Creatinina"],
 };
 const LAB_ALL = LAB_CAT.flatMap(([g, l]) => l.map((e) => [g, e]));
-// indicaciones de preparación según los exámenes elegidos
-function labPrep(ex) {
-  const has = (re) => ex.some((e) => re.test(e)), o = [];
-  if (has(/Glucosa en ayunas|Colesterol|HDL|LDL|Triglic|Insulina|Hierro|Curva de tolerancia|Ácido úrico|Urea|Perfil/)) o.push("Acudir en ayunas de 8 a 12 horas (puede tomar agua). No consumir alcohol 24 horas antes.");
-  if (has(/postprandial/)) o.push("Glucosa postprandial: tomar la muestra 2 horas después de iniciado el desayuno habitual.");
-  if (has(/Curva de tolerancia/)) o.push("Curva de tolerancia: dura unas 2 a 3 horas; permanecer en reposo en el laboratorio durante la prueba.");
-  if (has(/orina \(EMO\)|Urocultivo|Prueba de embarazo en orina|Microalbuminuria/)) o.push("Orina: primera orina de la mañana, previo aseo genital, recoger el chorro medio en frasco estéril; llevarla al laboratorio en menos de 2 horas.");
-  if (has(/24 horas/)) o.push("Orina de 24 horas: desechar la primera orina del día y recolectar todas las siguientes hasta la primera del día siguiente, en recipiente refrigerado.");
-  if (has(/Copro|Sangre oculta|heces|Rotavirus/)) o.push("Heces: muestra fresca en frasco limpio, sin contacto con orina ni agua del inodoro; entregar el mismo día.");
-  if (has(/Sangre oculta/)) o.push("Sangre oculta: 3 días antes evitar carnes rojas, hierro oral y antiinflamatorios, si su médico lo autoriza.");
-  if (has(/PSA/)) o.push("PSA: no tener relaciones sexuales ni andar en bicicleta o moto en las 48 horas previas.");
-  if (has(/Cortisol/)) o.push("Cortisol: tomar la muestra entre las 7 y 9 de la mañana.");
-  if (has(/Prolactina/)) o.push("Prolactina: reposo de 20 minutos antes de la toma; no realizar ejercicio el día anterior.");
-  if (has(/TSH|T4|T3/)) o.push("Hormonas tiroideas: si toma levotiroxina, hacerse la muestra antes de la dosis del día.");
-  if (has(/Baciloscopía/)) o.push("Baciloscopía: esputo de la primera expectoración de la mañana (no saliva), en frasco estéril.");
-  if (has(/Rayos X|Mamograf|Tomograf|rayos|radiograf/i)) o.push("Imagen: retirar joyas y objetos metálicos de la zona; avisar al técnico si existe posibilidad de embarazo.");
-  if (has(/Ecografía abdominal/)) o.push("Ecografía abdominal: ayuno de 6 a 8 horas.");
-  if (has(/Ecografía (renal|pélvica|prostática)/)) o.push("Ecografía pélvica, renal o prostática: tomar 1 litro de agua 1 hora antes y no orinar hasta el examen (vejiga llena).");
-  if (has(/Mamograf/)) o.push("Mamografía: no usar desodorante, talco ni cremas en axilas o mamas el día del examen.");
-  if (has(/Espirometr/)) o.push("Espirometría: no fumar 4 horas antes ni hacer ejercicio intenso; consulte si debe suspender inhaladores.");
-  if (has(/Audiometr/)) o.push("Audiometría: evitar exposición a ruido intenso las 12 a 14 horas previas.");
-  if (has(/secreción vaginal/)) o.push("Secreción vaginal: no usar óvulos ni duchas vaginales y evitar relaciones sexuales 48 horas antes.");
-  return o;
-}
 
 V.lab = (pre) => {
   const opts = Object.values(DB.patients).map((p) => `<option value="${esc(p.cedula)}">${esc(p.nombre)}</option>`).join("");
@@ -78,22 +47,24 @@ V.lab = (pre) => {
   <div class="card"><h2>Exámenes</h2>
     <div class="row" style="margin-bottom:10px"><span class="hint">Perfiles:</span>${Object.keys(LAB_PERF).map((k) => `<button type="button" class="btn s sm" data-pf="${esc(k)}">${esc(k)}</button>`).join("")}<button type="button" class="btn d sm" id="labclr">Limpiar</button></div>
     <input id="labq" placeholder="Buscar examen…" style="width:100%;margin-bottom:10px">
-    ${LAB_CAT.map(([g, l]) => `<div class="labg"><p class="hint" style="margin:10px 0 6px;font-weight:700;color:var(--teal)">${g}</p><div class="chks" style="--cols:3">${l.map((e) => `<label class="chk"><input type="checkbox" data-ex="${esc(e)}">${esc(e)}</label>`).join("")}</div></div>`).join("")}
+    ${LAB_CAT.map(([g, l]) => `<details class="labg"${LAB_OPEN[g] ? " open" : ""}><summary class="hint" style="margin:10px 0 6px;font-weight:700;color:var(--teal);cursor:pointer">${g} <span style="font-weight:400">(${l.length})</span></summary><div class="chks" style="--cols:3">${l.map((e) => `<label class="chk" title="Muestra: ${esc(labMuestra(e))}"><input type="checkbox" data-ex="${esc(e)}">${esc(e)}</label>`).join("")}</div></details>`).join("")}
     <label style="margin-top:12px">Otros exámenes (uno por línea)<textarea name="otros"></textarea></label>
     <p class="hint" id="labn" style="margin-top:8px"></p>
   </div>
-  <div class="card"><h2>Indicaciones para el paciente</h2><p class="hint">Se arman solas según los exámenes; puedes editarlas.</p><textarea name="prep" style="min-height:110px"></textarea>
+  <div class="card"><h2>Indicaciones para el paciente</h2><p class="hint">Se arman solas según los exámenes; puedes editarlas.</p><textarea name="prep" style="min-height:140px"></textarea>
+    <details style="margin-top:10px"><summary class="hint" style="cursor:pointer;font-weight:700">Guía: muestra y preparación de cada examen elegido</summary><div id="labguide" class="hint" style="margin-top:8px"></div></details>
     <label style="margin-top:10px">Datos clínicos para el laboratorio (opcional)<input name="clin" placeholder="Ej.: fiebre de 3 días, toma metformina 850 mg"></label></div>
   <div class="row"><button class="btn p">Emitir orden y ver documento</button><span class="hint">Al emitir se asigna el folio y se guarda en el registro.</span></div></form>`;
   const f = $("#f"); wirePatient(f);
   let prepTouched = false; f.prep.addEventListener("input", () => (prepTouched = true));
   const sel = () => $$("[data-ex]:checked", f).map((i) => i.dataset.ex).concat(f.otros.value.split("\n").map((x) => x.trim()).filter(Boolean));
-  const upd = () => { const ex = sel(); $("#labn").textContent = ex.length ? `${ex.length} examen(es) seleccionado(s).` : ""; if (!prepTouched) f.prep.value = labPrep(ex).join("\n"); };
+  const upd = () => { const ex = sel(); $("#labn").textContent = ex.length ? `${ex.length} examen(es) seleccionado(s).` : ""; if (!prepTouched) f.prep.value = labPrep(ex).join("\n");
+    $("#labguide").innerHTML = ex.length ? `<table class="t"><thead><tr><th>Examen</th><th>Muestra</th><th>Preparación</th></tr></thead><tbody>${ex.map((e) => `<tr><td>${esc(e)}</td><td>${esc(labMuestra(e) || "—")}</td><td>${labPrep([e]).map(esc).join("<br>") || "Sin preparación especial."}</td></tr>`).join("")}</tbody></table>` : "Elige exámenes para ver su guía."; };
   f.addEventListener("change", (e) => { if (e.target.matches("[data-ex]") || e.target.name === "otros") upd(); });
   f.otros.addEventListener("input", upd);
   $$("[data-pf]", f).forEach((b) => (b.onclick = () => { LAB_PERF[b.dataset.pf].forEach((e) => { const i = $(`[data-ex="${CSS.escape(e)}"]`, f); if (i) i.checked = true; }); upd(); }));
   $("#labclr").onclick = () => { $$("[data-ex]", f).forEach((i) => (i.checked = false)); f.otros.value = ""; prepTouched = false; upd(); };
-  $("#labq").oninput = () => { const q = MSP.norm($("#labq").value); $$(".labg", f).forEach((g) => { let any = false; $$(".chk", g).forEach((l) => { const ok = !q || MSP.norm(l.textContent).includes(q) || l.querySelector("input").checked; l.style.display = ok ? "" : "none"; any = any || ok; }); g.style.display = any ? "" : "none"; }); };
+  $("#labq").oninput = () => { const q = MSP.norm($("#labq").value); $$(".labg", f).forEach((g) => { let any = false; $$(".chk", g).forEach((l) => { const ok = !q || MSP.norm(l.textContent).includes(q) || l.querySelector("input").checked; l.style.display = ok ? "" : "none"; any = any || ok; }); g.style.display = any ? "" : "none"; if (q && any) g.open = true; }); };
   if (pre) {
     if (pre.cedula) { f.cedula.value = pre.cedula; f.cedula.dispatchEvent(new Event("change")); }
     if (pre.dx) f.dx.value = pre.dx; if (pre.cie) f.cie.value = pre.cie; if (pre.clin) f.clin.value = pre.clin;
