@@ -114,16 +114,28 @@ V.lab = (pre) => {
 };
 
 function renderOL(doc, mode) {
-  const c = chrome(doc, "p"), d = doc.data, p = doc.patient;
+  const c = chrome(doc, "p", true), d = doc.data, p = doc.patient, s = DB.settings;
   // órdenes antiguas: lo escrito en «Otros» que sea imagen pasa a su grupo
-  const grupos = d.grupos.flatMap(([g, l]) => (g === "Otros" ? olGroups([], l) : [[g, l]])).reduce((a, [g, l]) => { const k = a.find((x) => x[0] === g); if (k) k[1].push(...l); else a.push([g, l.slice()]); return a; }, []);
-  const n = d.ex.length, cols = n > 14 ? 2 : 1;
-  return `<div class="page a4p">${c.wm}<div class="z">${c.head("ORDEN DE EXÁMENES", olSub(grupos))}
-    ${ptable(p, [["Diagnóstico presuntivo", d.dx || "", "CIE-10", d.cie || ""], ["Prioridad", d.pri, "Laboratorio / centro", d.labn || ""]])}
-    ${d.clin ? `<div class="sm" style="margin:-2px 0 6px"><b>Datos clínicos:</b> ${esc(d.clin)}</div>` : ""}
-    <div class="sec"><em>01</em>EXÁMENES SOLICITADOS <span class="sm" style="font-weight:400;letter-spacing:0">(${n})</span></div>
-    <div class="olx" style="column-count:${cols}">${grupos.map(([g, l]) => `<div class="olg"><b>${esc(g)}</b><ul>${l.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>`).join("")}</div>
-    ${d.prep ? `<div class="sec"><em>02</em>INDICACIONES PARA EL PACIENTE</div><div class="concl" style="font-size:8.8pt">${esc(d.prep).split("\n").map((x) => "• " + x).join("<br>")}</div>` : ""}
-    <div class="sig" style="margin-top:12mm"><div class="sm">Fecha de emisión: <b>${fmt(doc.date)}</b><br>Válida por 30 días.</div>${c.sig(mode)}</div>
-    </div>${c.foot}</div>`;
+  const grupos = d.grupos.flatMap(([g, l]) => (g === "Otros" ? olGroups([], l) : [[g, l]])).reduce((a, [g, l]) => { const k = a.find((x) => x[0] === g); if (k) k[1].push(...l); else a.push([g, l.slice()]); return a; }, [])
+    .map(([g, l]) => [g, l.map((e) => String(e).replace(/^\s*\d+\s*[.)\-]+\s*-?\s*/, "").trim()).filter(Boolean)]).filter(([, l]) => l.length);
+  const n = grupos.reduce((t, [, l]) => t + l.length, 0), cls = n > 16 ? "c2 sm" : n > 10 ? "sm" : "";
+  const sv = (l, v) => (v ? `<div><small>${l}</small><div class="v">${esc(v)}</div></div>` : "");
+  const edadP = p.edad || (p.nac ? edad(p.nac) + " años" : "");
+  let k = 0;
+  const lista = grupos.map(([g, l]) => `<div class="grp"><div class="gh">${esc(g)}</div>${l.map((e) => `<div class="ex"><i>${++k}</i><span>${esc(e)}</span></div>`).join("")}</div>`).join("");
+  const prep = String(d.prep || "").split("\n").map((x) => x.replace(/^\s*[•\-·*]\s*/, "").trim()).filter(Boolean);
+  const who = mode === "m" ? `<div class="who"><div class="line"></div><b>${esc(s.nombre)}</b><br>C.I. ${fmtCed(s.ci)} · Reg. SENESCYT ${esc(s.senescyt)} · Firma y sello</div>`
+    : `<div class="who"><small>FIRMADO ELECTRÓNICAMENTE POR</small><b>${esc(s.nombre)}</b><br>C.I. ${fmtCed(s.ci)} · Reg. SENESCYT ${esc(s.senescyt)}</div>`;
+  return `<div class="page a4p ol2">
+    <div class="side"><div class="lg"><img src="${LOGO}" alt="Signo"></div>
+      <div><small>Folio</small><div class="v fo">${doc.folio}</div><div class="sub">Emitida ${fmt(doc.date)}</div></div>
+      ${sv("Paciente", p.nombre)}${sv("Cédula", fmtCed(p.cedula))}${sv("Edad · sexo", [edadP, p.sexo].filter(Boolean).join(" · "))}${sv("Nacimiento", p.nac ? fmt(p.nac) : "")}
+      ${sv("Diagnóstico presuntivo", [d.dx, d.cie].filter(Boolean).join(" · "))}${sv("Prioridad", d.pri)}${sv("Laboratorio / centro", d.labn)}
+      <div class="dr"><b>${esc(s.nombre)}</b><br>${esc(s.titulo)}<br>Reg. SENESCYT ${esc(s.senescyt)}</div></div>
+    <div class="main"><h2>Orden de exámenes</h2><div class="st">${esc(olSub(grupos).replace(/^./, (m) => m.toUpperCase()))} · ${n} examen${n === 1 ? "" : "es"}</div>
+      ${d.clin ? `<div class="clin"><b>Datos clínicos:</b> ${esc(d.clin)}</div>` : ""}
+      <div class="exl ${cls}">${lista}</div>
+      ${prep.length ? `<div class="ind"><small>INDICACIONES PARA EL PACIENTE</small>${prep.map((x) => `<div>• ${esc(x)}</div>`).join("")}</div>` : ""}
+      <div class="bot"><div class="val">Válida por 30 días${doc.status === "Anulada" ? ' · <b style="color:#B4532A">ANULADA</b>' : ""}</div>${who}</div></div>
+    ${c.foot}</div>`;
 }
